@@ -1,0 +1,194 @@
+.roller {
+    color: #8585AD;
+    display: inline-block;
+    position: relative;
+}
+
+/* Размеры лоадера */
+.small {
+    width: 40px;
+    height: 40px;
+}
+
+.small div {
+    transform-origin: 20px 20px;
+}
+
+.small div:after {
+    width: 3.6px;
+    height: 3.6px;
+    margin: -1.8px 0 0 -1.8px;
+}
+
+.medium {
+    width: 80px;
+    height: 80px;
+}
+
+.medium div {
+    transform-origin: 40px 40px;
+}
+
+.medium div:after {
+    width: 7.2px;
+    height: 7.2px;
+    margin: -3.6px 0 0 -3.6px;
+}
+
+.large {
+    width: 120px;
+    height: 120px;
+}
+
+.large div {
+    transform-origin: 60px 60px;
+}
+
+.large div:after {
+    width: 10.8px;
+    height: 10.8px;
+    margin: -5.4px 0 0 -5.4px;
+}
+
+.roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.roller div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Позиционирование точек для разных размеров */
+.small div:nth-child(1):after {
+    top: 31.31371px;
+    left: 31.31371px;
+}
+
+.small div:nth-child(2):after {
+    top: 33.85641px;
+    left: 28px;
+}
+
+.small div:nth-child(3):after {
+    top: 35.45482px;
+    left: 24.14111px;
+}
+
+.small div:nth-child(4):after {
+    top: 36px;
+    left: 20px;
+}
+
+.small div:nth-child(5):after {
+    top: 35.45482px;
+    left: 15.85889px;
+}
+
+.small div:nth-child(6):after {
+    top: 33.85641px;
+    left: 12px;
+}
+
+.small div:nth-child(7):after {
+    top: 31.31371px;
+    left: 8.68629px;
+}
+
+.small div:nth-child(8):after {
+    top: 28px;
+    left: 6.14359px;
+}
+
+.medium div:nth-child(1):after {
+    top: 62.62742px;
+    left: 62.62742px;
+}
+
+.medium div:nth-child(2):after {
+    top: 67.71281px;
+    left: 56px;
+}
+
+.medium div:nth-child(3):after {
+    top: 70.90963px;
+    left: 48.28221px;
+}
+
+.medium div:nth-child(4):after {
+    top: 72px;
+    left: 40px;
+}
+
+.medium div:nth-child(5):after {
+    top: 70.90963px;
+    left: 31.71779px;
+}
+
+.medium div:nth-child(6):after {
+    top: 67.71281px;
+    left: 24px;
+}
+
+.medium div:nth-child(7):after {
+    top: 62.62742px;
+    left: 17.37258px;
+}
+
+.medium div:nth-child(8):after {
+    top: 56px;
+    left: 12.28719px;
+}
+
+.large div:nth-child(1):after {
+    top: 93.94113px;
+    left: 93.94113px;
+}
+
+.large div:nth-child(2):after {
+    top: 101.56922px;
+    left: 84px;
+}
+
+.large div:nth-child(3):after {
+    top: 106.36445px;
+    left: 72.42332px;
+}
+
+.large div:nth-child(4):after {
+    top: 108px;
+    left: 60px;
+}
+
+.large div:nth-child(5):after {
+    top: 106.36445px;
+    left: 47.57668px;
+}
+
+.large div:nth-child(6):after {
+    top: 101.56922px;
+    left: 36px;
+}
+
+.large div:nth-child(7):after {
+    top: 93.94113px;
+    left: 26.05887px;
+}
+
+.large div:nth-child(8):after {
+    top: 84px;
+    left: 18.43078px;
+}
+
+/* Анимация */
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

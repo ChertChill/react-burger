@@ -4,6 +4,8 @@ import styles from './burger-constructor.module.css';
 import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
+import { IngredientType } from '../../utils/types';
+import { useModal } from '../../hooks';
 
 /**
  * Компонент конструктора бургеров
@@ -12,7 +14,7 @@ import OrderDetails from '../order-details/order-details';
  */
 export default function BurgerConstructor({ingredients}) {
     const [hasOverflow, setHasOverflow] = useState(false);      // Состояние для отслеживания переполнения контейнера с ингредиентами
-    const [isModalOpen, setIsModalOpen] = useState(false);      // Состояние для отслеживания открытия модального окна
+    const { isModalOpen, openModal, closeModal } = useModal();  // Кастомный хук для управления модальным окном
     const [orderNumber, setOrderNumber] = useState(null);       // Состояние для хранения номера заказа
     
     // Ссылка на контейнер с ингредиентами для проверки переполнения
@@ -56,14 +58,7 @@ export default function BurgerConstructor({ingredients}) {
         const randomOrderNumber = Math.floor(Math.random() * 1000000) + 100000;   // Тестовое рандомное число для заказа
 
         setOrderNumber(randomOrderNumber);
-        setIsModalOpen(true);
-    };
-
-    /**
-     * Функция для закрытия модального окна
-     */
-    const closeModal = () => {
-        setIsModalOpen(false);
+        openModal();
     };
 
     return (
@@ -160,20 +155,5 @@ export default function BurgerConstructor({ingredients}) {
 }
 
 BurgerConstructor.propTypes = {
-    ingredients: PropTypes.arrayOf(
-        PropTypes.shape({
-            _id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            type: PropTypes.oneOf(['bun', 'sauce', 'main']).isRequired,
-            proteins: PropTypes.number.isRequired,
-            fat: PropTypes.number.isRequired,
-            carbohydrates: PropTypes.number.isRequired,
-            calories: PropTypes.number.isRequired,
-            price: PropTypes.number.isRequired,
-            image: PropTypes.string.isRequired,
-            image_mobile: PropTypes.string,
-            image_large: PropTypes.string,
-            __v: PropTypes.number
-        })
-    ).isRequired
+    ingredients: PropTypes.arrayOf(IngredientType).isRequired
 };

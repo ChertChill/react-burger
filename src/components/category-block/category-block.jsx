@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import styles from './category-block.module.css';
 import CategoryItem from '../category-item/category-item';
+import { IngredientType } from '../../utils/types';
 
 /**
  * Компонент блока категории ингредиентов
@@ -37,22 +38,7 @@ const CategoryBlock = React.forwardRef(({ title, items, onIngredientClick }, ref
 
 CategoryBlock.propTypes = {
     title: PropTypes.string.isRequired,
-    items: PropTypes.arrayOf(
-        PropTypes.shape({
-            _id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            type: PropTypes.oneOf(['bun', 'sauce', 'main']).isRequired,
-            proteins: PropTypes.number.isRequired,
-            fat: PropTypes.number.isRequired,
-            carbohydrates: PropTypes.number.isRequired,
-            calories: PropTypes.number.isRequired,
-            price: PropTypes.number.isRequired,
-            image: PropTypes.string.isRequired,
-            image_mobile: PropTypes.string,
-            image_large: PropTypes.string,
-            __v: PropTypes.number
-        })
-    ).isRequired,
+    items: PropTypes.arrayOf(IngredientType).isRequired,
     onIngredientClick: PropTypes.func.isRequired
 };
 

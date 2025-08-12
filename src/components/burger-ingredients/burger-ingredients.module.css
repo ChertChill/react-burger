@@ -5,6 +5,11 @@
     max-height: calc(100vh - 180px);
 }
 
+    .nav__tabs {
+        display: flex;
+        flex-flow: row nowrap;
+    }
+
     .categories__group {
         flex: 1;
         overflow-y: auto;

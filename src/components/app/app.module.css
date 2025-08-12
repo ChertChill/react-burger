@@ -21,6 +21,10 @@
         gap: 40px;
     }
 
+        .error__text {
+            color: red;
+        }
+
 
 
 /* -- roller -- */

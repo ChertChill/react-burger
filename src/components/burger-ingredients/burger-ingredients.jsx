@@ -5,6 +5,8 @@ import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import CategoryBlock from "../category-block/category-block";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
+import { IngredientType } from '../../utils/types';
+import { useModal } from '../../hooks';
 
 /**
  * Компонент для отображения списка ингредиентов
@@ -15,7 +17,7 @@ import IngredientDetails from "../ingredient-details/ingredient-details";
 export default function BurgerIngredients({ingredients}) {
     const [current, setCurrent] = useState('bun');                          // Состояние активного таба
     const [selectedIngredient, setSelectedIngredient] = useState(null);     // Состояние выбранного ингредиента для модального окна
-    const [isModalOpen, setIsModalOpen] = useState(false);                  // Состояние открытия модального окна
+    const { isModalOpen, openModal, closeModal } = useModal();              // Кастомный хук для управления модальным окном
 
     // Ссылки на контейнер и секции категорий для отслеживания скролла
     const containerRef = useRef(null);
@@ -69,14 +71,14 @@ export default function BurgerIngredients({ingredients}) {
      */
     const handleIngredientClick = (ingredient) => {
         setSelectedIngredient(ingredient);
-        setIsModalOpen(true);
+        openModal();
     };
 
     /**
      * Функция для закрытия модального окна
      */
     const handleCloseModal = () => {
-        setIsModalOpen(false);
+        closeModal();
         setSelectedIngredient(null);
     };
 
@@ -99,7 +101,7 @@ export default function BurgerIngredients({ingredients}) {
             </h1>
 
             {/* Навигационные табы */}
-            <nav className="mt-5" style={{ display: 'flex' }}>
+            <nav className={`${styles.nav__tabs} mt-5`}>
                 <Tab value="bun" active={current === 'bun'} onClick={() => handleTabClick('bun')}>
                     Булки
                 </Tab>
@@ -156,20 +158,5 @@ export default function BurgerIngredients({ingredients}) {
 }
 
 BurgerIngredients.propTypes = {
-    ingredients: PropTypes.arrayOf(
-        PropTypes.shape({
-            _id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            type: PropTypes.oneOf(['bun', 'sauce', 'main']).isRequired,
-            proteins: PropTypes.number.isRequired,
-            fat: PropTypes.number.isRequired,
-            carbohydrates: PropTypes.number.isRequired,
-            calories: PropTypes.number.isRequired,
-            price: PropTypes.number.isRequired,
-            image: PropTypes.string.isRequired,
-            image_mobile: PropTypes.string,
-            image_large: PropTypes.string,
-            __v: PropTypes.number
-        })
-    ).isRequired
+    ingredients: PropTypes.arrayOf(IngredientType).isRequired
 };

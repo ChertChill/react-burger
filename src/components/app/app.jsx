@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './app.module.css';
-import loaderStyles from '../common/loader.module.css';
+import Loader from '../loader/loader';
 import AppHeader from '../app-header/app-header';
 import BurgerConstructor from '../burger-constructor/burger-constructor';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
@@ -69,14 +69,12 @@ export default function App() {
                 
                 {/* Индикатор загрузки */}
                 {loading && !error && (
-                    <div className={`${loaderStyles.roller} ${styles.roller}`}>
-                        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                    </div>
+                    <Loader size="medium" className={styles.roller} />
                 )}
 
                 {/* Отображение ошибки при неудачной загрузке */}
                 {error && 
-                    <p className="text text_type_main-default text_color_inactive" style={{ color: 'red' }}>
+                    <p className={`${styles.error__text} text text_type_main-default text_color_inactive`}>
                         Ошибка при получении ингредиентов: {error}
                     </p>
                 }

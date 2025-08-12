@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import styles from './ingredient-details.module.css';
-import loaderStyles from '../common/loader.module.css';
+import Loader from '../loader/loader';
 import NutritionItem from '../nutrition-item/nutrition-item';
+import { IngredientType } from '../../utils/types';
 
 /**
  * Компонент для отображения детальной информации об ингредиенте
@@ -41,9 +42,7 @@ export default function IngredientDetails({ ingredient }) {
                 
                 {/* Индикатор загрузки изображения */}
                 {imageLoading && !imageError && (
-                    <div className={loaderStyles.roller}>
-                        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                    </div>
+                    <Loader size="medium" />
                 )}
                 
                 {/* Сообщение об ошибке загрузки */}
@@ -82,18 +81,5 @@ export default function IngredientDetails({ ingredient }) {
 }
 
 IngredientDetails.propTypes = {
-    ingredient: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        type: PropTypes.oneOf(['bun', 'sauce', 'main']).isRequired,
-        proteins: PropTypes.number.isRequired,
-        fat: PropTypes.number.isRequired,
-        carbohydrates: PropTypes.number.isRequired,
-        calories: PropTypes.number.isRequired,
-        price: PropTypes.number.isRequired,
-        image: PropTypes.string.isRequired,
-        image_mobile: PropTypes.string,
-        image_large: PropTypes.string,
-        __v: PropTypes.number
-    }).isRequired
+    ingredient: IngredientType.isRequired
 };
