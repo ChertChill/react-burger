@@ -1,3 +1,13 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +21,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+/* Скроллбар */
+
+* {
+  scrollbar-width: 8px; /* ширина скроллбара */
+  scrollbar-color: #8585AD #2F2F37; /* цвет бегунка и фона */
+}
+
+*::-webkit-scrollbar {
+  width: 8px; /* ширина вертикального скроллбара */
+  height: 8px; /* высота горизонтального скроллбара */
+  background-color: #2F2F37; /* цвет фона скроллбара */
+  border-radius: 0; /* прямые углы */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #8585AD; /* цвет бегунка */
+  border-radius: 0; /* прямые углы */
+  border: 0; /* чтобы бегунок не прилегал вплотную */
+}
+

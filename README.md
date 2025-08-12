@@ -1,46 +1,125 @@
-# Getting Started with Create React App
+# React Burger
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Интерактивное веб-приложение для создания кастомных бургеров с возможностью выбора ингредиентов и оформления заказов.
 
-## Available Scripts
+## Описание проекта
 
-In the project directory, you can run:
+React Burger - это веб-приложение, построенное на React, которое позволяет пользователям:
 
-### `npm start`
+- Просматривать каталог ингредиентов (булки, соусы, начинки)
+- Собирать собственные бургеры путем перетаскивания ингредиентов
+- Просматривать детальную информацию об ингредиентах
+- Оформлять заказы с генерацией номера заказа
+- Адаптивный интерфейс с поддержкой различных устройств
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Технологии
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **React 19.1.1** - основная библиотека для построения пользовательского интерфейса
+- **TypeScript 4.9.5** - типизированный JavaScript
+- **CSS Modules** - для стилизации компонентов
+- **@ya.praktikum/react-developer-burger-ui-components** - UI компоненты от Яндекс.Практикум
+- **PropTypes** - для валидации пропсов
+- **Fetch API** - для работы с внешним API
 
-### `npm test`
+## Структура проекта
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+src/
+├── components/
+│   ├── app/                    # Главный компонент приложения
+│   ├── app-header/             # Шапка приложения с навигацией
+│   ├── burger-constructor/     # Конструктор бургеров
+│   ├── burger-ingredients/     # Каталог ингредиентов
+│   ├── category-block/         # Блок категории ингредиентов
+│   ├── category-item/          # Элемент категории
+│   ├── common/                 # Общие компоненты (лоадер)
+│   ├── ingredient-details/     # Детали ингредиента
+│   ├── mobile-restriction/     # Ограничение для мобильных устройств
+│   ├── modal/                  # Модальные окна
+│   ├── modal-overlay/          # Оверлей для модальных окон
+│   ├── nutrition-item/         # Элемент информации о питательности
+│   └── order-details/          # Детали заказа
+├── images/                     # Изображения
+└── index.tsx                   # Точка входа приложения
+```
 
-### `npm run build`
+## Установка и запуск
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Предварительные требования
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Node.js (версия 14 или выше)
+- npm или yarn
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Установка зависимостей
 
-### `npm run eject`
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Запуск в режиме разработки
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Сборка для продакшена
 
-## Learn More
+```bash
+npm run build
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Основные функции
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 1. Каталог ингредиентов
+- Отображение ингредиентов по категориям (булки, соусы, начинки)
+- Табы для быстрой навигации между категориями
+- Плавная прокрутка к выбранной категории
+- Модальные окна с детальной информацией об ингредиентах
+
+### 2. Конструктор бургеров
+- Drag & Drop функциональность для добавления ингредиентов
+- Визуальное отображение собранного бургера
+- Автоматический расчет общей стоимости
+- Возможность удаления ингредиентов
+
+### 3. Оформление заказов
+- Кнопка "Оформить заказ" с валидацией
+- Генерация уникального номера заказа
+- Модальное окно с подтверждением заказа
+
+### 4. Адаптивность
+- Поддержка различных размеров экранов
+- Ограничение для мобильных устройств (ширина < 1200px)
+- Responsive дизайн
+
+## API
+
+Приложение использует внешний API для получения данных об ингредиентах:
+
+- **Базовый URL**: `https://norma.nomoreparties.space/api/ingredients`
+- **Метод**: GET
+- **Ответ**: JSON с массивом ингредиентов
+
+## UI/UX особенности
+
+- Современный и интуитивно понятный интерфейс
+- Плавные анимации и переходы
+- Интерактивные элементы с hover-эффектами
+- Лоадеры для улучшения пользовательского опыта
+- Модальные окна для детального просмотра
+
+## Планы развития
+
+- [ ] Реализация системы аутентификации
+- [ ] Добавление истории заказов
+- [ ] Интеграция с реальным API для оформления заказов
+- [ ] Добавление функциональности drag & drop
+- [ ] Реализация профиля пользователя
+- [ ] Добавление ленты заказов
+
+## Контакты для связи
+
+- **Почта** – chertchill@yandex.ru
+- **Telegram** – https://telegram.me/chert_chill
