@@ -1,0 +1,22 @@
+.group {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    max-height: calc(100vh - 180px);
+}
+
+    .nav__tabs {
+        display: flex;
+        flex-flow: row nowrap;
+    }
+
+    .categories__group {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 0;
+
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 40px;
+    }

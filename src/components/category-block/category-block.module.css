@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 24px;
+    flex-shrink: 0;
+}
+
+    .group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        overflow: visible;
+    }

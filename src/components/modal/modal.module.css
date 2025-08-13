@@ -1,0 +1,30 @@
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    z-index: 100;
+
+    max-width: 720px;
+    width: 100%;
+    border-radius: 40px;
+    border: 1px solid #4C4CFF33;
+    background: #1C1C21;
+    box-shadow: 0px 0px 1px 0px #0000000A, 0px 4px 8px 0px #0000000A, 0px 16px 24px 0px #0000000A, 0px 24px 32px 0px #0000000A;
+}
+
+    .header {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        
+        height: 64px;
+    }
+
+        .button__close {
+            border: 0;
+            background: none;
+            cursor: pointer;
+        }
