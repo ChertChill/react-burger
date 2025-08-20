@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import styles from './app.module.css';
 import Loader from '../loader/loader';
 import AppHeader from '../app-header/app-header';
 import BurgerConstructor from '../burger-constructor/burger-constructor';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
 import MobileRestriction from '../mobile-restriction/mobile-restriction';
-
-// URL API для получения данных об ингредиентах
-const API_URL = 'https://norma.nomoreparties.space/api/ingredients';
+import { fetchIngredients } from '../../services/actions';
 
 /**
  * Главный компонент приложения - Burger Constructor
@@ -15,9 +16,9 @@ const API_URL = 'https://norma.nomoreparties.space/api/ingredients';
  * обрабатывает адаптивность и роутинг между разделами
  */
 export default function App() {
-    const [ingredients, setIngredients] = useState([]);             // Состояние для хранения списка ингредиентов
-    const [error, setError] = useState(null);                       // Состояние для обработки ошибок
-    const [loading, setLoading] = useState(true);                   // Состояние загрузки данных
+    const dispatch = useDispatch();
+    
+    const { ingredients, loading, error } = useSelector(state => state.ingredients);
     const [activeSection, setActiveSection] = useState('burger');   // Состояние активного раздела (тестовая реализация роутинга)
     const [isMobile, setIsMobile] = useState(false);                // Состояние для определения мобильного устройства
 
@@ -37,23 +38,11 @@ export default function App() {
 
     // Эффект для загрузки данных об ингредиентах при монтировании компонента
     useEffect(() => {
-        fetch(API_URL)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Ошибка запроса: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                setIngredients(data.data)
-                setLoading(false);
-            })
-            .catch(error => {
-                setError(error);
-                setLoading(false);
-                console.error('Ошибка при получении ингредиентов:', error);
-            })
-    }, [])
+        // Загружаем ингредиенты только если их еще нет и нет ошибки
+        if (!ingredients || ingredients.length === 0) {
+            dispatch(fetchIngredients());
+        }
+    }, [dispatch, ingredients])
 
     // Показываем ограничение для мобильных устройств
     if (isMobile) {
@@ -61,11 +50,12 @@ export default function App() {
     }
 
     return (
-        <div className={styles.container}>
-            {/* Шапка приложения с навигацией */}
-            <AppHeader activeSection={activeSection} setActiveSection={setActiveSection} />
+        <DndProvider backend={HTML5Backend}>
+            <div className={styles.container}>
+                {/* Шапка приложения с навигацией */}
+                <AppHeader activeSection={activeSection} setActiveSection={setActiveSection} />
 
-            <main className={`${styles.group} pt-10 pr-5 pl-5`}>
+                <main className={`${styles.group} pt-10 pr-5 pl-5`}>
                 
                 {/* Индикатор загрузки */}
                 {loading && !error && (
@@ -80,13 +70,13 @@ export default function App() {
                 }
 
                 {/* Основной контент приложения */}
-                {!loading && !error && (
+                {!loading && !error && ingredients && ingredients.length > 0 && (
                     <>
                         {/* Раздел конструктора бургеров */}
                         {activeSection === 'burger' && (
                             <>
-                                <BurgerIngredients ingredients={ingredients} />
-                                <BurgerConstructor ingredients={ingredients} />
+                                <BurgerIngredients />
+                                <BurgerConstructor />
                             </>
                         )}
 
@@ -111,7 +101,8 @@ export default function App() {
                         )}
                     </>
                 )}
-            </main>
-        </div>
+                </main>
+            </div>
+        </DndProvider>
     );
 }

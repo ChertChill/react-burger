@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types';
+import { useDrag } from 'react-dnd';
 import styles from './category-item.module.css';
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { IngredientType } from '../../utils/types';
@@ -11,6 +12,32 @@ import { IngredientType } from '../../utils/types';
  */
 export default function CategoryItem({ item, onIngredientClick }) {
     /**
+     * Хук для drag & drop функциональности
+     * Позволяет перетаскивать ингредиент в конструктор бургера
+     * Отслеживает состояние перетаскивания для визуальной обратной связи
+     */
+    const [{ isDragging }, drag] = useDrag({
+        type: 'ingredient',
+        item: { ...item },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    });
+
+    // Добавляем/убираем класс dragging к body при изменении состояния
+    React.useEffect(() => {
+        if (isDragging) {
+            document.body.classList.add('dragging');
+        } else {
+            document.body.classList.remove('dragging');
+        }
+
+        return () => {
+            document.body.classList.remove('dragging');
+        };
+    }, [isDragging]);
+    
+    /**
      * Обработчик клика по ингредиенту
      * Вызывает функцию для открытия модального окна с деталями
      */
@@ -20,11 +47,20 @@ export default function CategoryItem({ item, onIngredientClick }) {
         }
     };
 
+
+
     return (
-        <div className={styles.item} key={item._id} onClick={handleClick}>
+        <div 
+            ref={drag}
+            className={`${styles.item} ${isDragging ? styles.dragging : ''}`} 
+            key={item._id} 
+            onClick={handleClick} 
+        >
             
             {/* Счетчик количества ингредиентов в заказе */}
-            <Counter count={1} size="default" extraClass="m-1" />
+            {(item.count && item.count > 0) && (
+                <Counter count={item.count} size="default" extraClass="m-1" />
+            )}
 
             {/* Изображение ингредиента */}
             <img src={item.image} alt={item.name} />

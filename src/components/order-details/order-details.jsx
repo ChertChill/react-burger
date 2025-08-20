@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import styles from './order-details.module.css';
 import orderStatus from '../../images/order-status.png';
 
@@ -8,7 +8,29 @@ import orderStatus from '../../images/order-status.png';
  * Отображается в модальном окне после оформления заказа
  * Показывает номер заказа, статус и сообщение о начале приготовления
  */
-export default function OrderDetails({ orderNumber }) {
+export default function OrderDetails() {
+    const { orderNumber, loading, error } = useSelector(state => state.order);
+    
+    if (loading) {
+        return (
+            <div className={`${styles.group} mt-4 mb-20`}>
+                <p className="text text_type_main-medium">
+                    Оформление заказа...
+                </p>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className={`${styles.group} mt-4 mb-20`}>
+                <p className="text text_type_main-medium text_color_error">
+                    Ошибка: {error}
+                </p>
+            </div>
+        );
+    }
+    
     return (
         <div className={`${styles.group} mt-4 mb-20`}>
 
@@ -40,7 +62,3 @@ export default function OrderDetails({ orderNumber }) {
         </div>
     );
 }
-
-OrderDetails.propTypes = {
-    orderNumber: PropTypes.number.isRequired
-};
