@@ -19,3 +19,12 @@ export const IngredientType = PropTypes.shape({
   image_large: PropTypes.string,
   __v: PropTypes.number
 });
+
+/**
+ * PropTypes для объекта ингредиента в конструкторе
+ * Расширенная версия IngredientType с дополнительными полями для конструктора
+ */
+export const ConstructorIngredientType = PropTypes.shape({
+  ...IngredientType,  // используем spread
+  id: PropTypes.string.isRequired,
+});

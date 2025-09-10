@@ -14,6 +14,11 @@
     opacity: 0.8;
 }
 
+.item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
     .item img {
         max-width: 240px;
     }
