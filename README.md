@@ -118,6 +118,7 @@ src/
 │   └── store/                      # Redux store
 │       └── store.js                # Конфигурация store
 ├── utils/                          # Утилиты и константы
+│   ├── checkResponse.js            # Утилита для проверки ответов API
 │   ├── constants.js                # Константы приложения
 │   └── types.js                    # PropTypes для валидации
 ├── index.css                       # Глобальные стили

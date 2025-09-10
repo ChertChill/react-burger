@@ -8,7 +8,7 @@ import {
   INCREMENT_INGREDIENT_COUNT,
   DECREMENT_INGREDIENT_COUNT
 } from './action-types';
-import { API_BASE_URL } from '../../utils/constants';
+import { request } from '../../utils/checkResponse';
 
 /**
  * Синхронные action creators для управления ингредиентами
@@ -111,19 +111,9 @@ export const fetchIngredients = () => {
     try {
       dispatch({ type: FETCH_INGREDIENTS_REQUEST });
       
-      const response = await fetch(`${API_BASE_URL}/ingredients`);
+      const data = await request('ingredients');
       
-      if (!response.ok) {
-        throw new Error('Ошибка при загрузке ингредиентов');
-      }
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        dispatch({ type: FETCH_INGREDIENTS_SUCCESS, payload: data.data });
-      } else {
-        throw new Error('Неверный формат данных');
-      }
+      dispatch({ type: FETCH_INGREDIENTS_SUCCESS, payload: data.data });
     } catch (error) {
       dispatch({ type: FETCH_INGREDIENTS_ERROR, payload: error.message });
     }

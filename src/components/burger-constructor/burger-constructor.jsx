@@ -6,7 +6,7 @@ import { ConstructorElement, Button, CurrencyIcon } from '@ya.praktikum/react-de
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
 import { useModal } from '../../hooks';
-import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor } from '../../services/actions';
+import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor, clearConstructor } from '../../services/actions';
 import DraggableConstructorItem from './draggable-constructor-item';
 
 /**
@@ -104,8 +104,10 @@ export default function BurgerConstructor() {
     useEffect(() => {
         if (orderNumber && !orderLoading && !orderError) {
             openModal();
+            // Очищаем конструктор после успешного получения номера заказа
+            dispatch(clearConstructor());
         }
-    }, [orderNumber, orderLoading, orderError, openModal]);
+    }, [orderNumber, orderLoading, orderError, openModal, dispatch]);
 
     /**
      * Обработчик клика по кнопке "Оформить заказ"

@@ -7,7 +7,7 @@ import {
   SET_ORDER_ERROR,
   CLEAR_ORDER
 } from './action-types';
-import { API_BASE_URL } from '../../utils/constants';
+import { request } from '../../utils/checkResponse';
 
 /**
  * Синхронные action creators для управления заказами
@@ -81,7 +81,7 @@ export const createOrder = (bun, constructorIngredients) => {
         bun._id // Вторая булка (та же самая)
       ];
       
-      const response = await fetch(`${API_BASE_URL}/orders`, {
+      const data = await request('orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -91,18 +91,7 @@ export const createOrder = (bun, constructorIngredients) => {
         })
       });
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Ошибка при создании заказа');
-      }
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        dispatch({ type: CREATE_ORDER_SUCCESS, payload: data.order.number });
-      } else {
-        throw new Error('Неверный формат данных заказа');
-      }
+      dispatch({ type: CREATE_ORDER_SUCCESS, payload: data.order.number });
     } catch (error) {
       dispatch({ type: CREATE_ORDER_ERROR, payload: error.message });
     }
