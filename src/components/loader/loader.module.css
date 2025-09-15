@@ -2,6 +2,10 @@
     color: #8585AD;
     display: inline-block;
     position: relative;
+
+    align-self: center;
+    justify-self: center;
+    grid-column: 1 / -1;
 }
 
 /* Размеры лоадера - маленький */

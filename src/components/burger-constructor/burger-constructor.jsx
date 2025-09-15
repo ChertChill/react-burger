@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useDrop } from 'react-dnd';
 import styles from './burger-constructor.module.css';
 import { ConstructorElement, Button, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
 import { useModal } from '../../hooks';
-import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor, clearConstructor } from '../../services/actions';
+import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor, clearConstructor, saveConstructorState, restoreConstructorState } from '../../services/actions';
 import DraggableConstructorItem from './draggable-constructor-item';
 
 /**
@@ -16,10 +17,13 @@ import DraggableConstructorItem from './draggable-constructor-item';
  */
 export default function BurgerConstructor() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { bun, constructorIngredients } = useSelector(state => state.constructor);
     const { loading: orderLoading, error: orderError, orderNumber } = useSelector(state => state.order);
+    const { isAuthenticated } = useSelector(state => state.auth);
     const [hasOverflow, setHasOverflow] = useState(false);      // Состояние для отслеживания переполнения контейнера с ингредиентами
+    const [orderTimer, setOrderTimer] = useState(0);            // Счетчик времени создания заказа
     const { isModalOpen, openModal, closeModal } = useModal();  // Кастомный хук для управления модальным окном
     
     // Ссылка на контейнер с ингредиентами для проверки переполнения
@@ -100,6 +104,48 @@ export default function BurgerConstructor() {
         };
     }, [chosenMiddleIngredients]);
 
+    // Эффект для отслеживания времени создания заказа
+    useEffect(() => {
+        let interval;
+        
+        if (orderLoading) {
+            setOrderTimer(0);
+            interval = setInterval(() => {
+                setOrderTimer(prev => {
+                    const newTime = prev + 1;
+                    // Если прошло 15 секунд, останавливаем счетчик
+                    if (newTime >= 15) {
+                        clearInterval(interval);
+                        return 15;
+                    }
+                    return newTime;
+                });
+            }, 1000);
+        } else {
+            setOrderTimer(0);
+        }
+        
+        return () => {
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [orderLoading]);
+
+    // Эффект для восстановления состояния конструктора при загрузке приложения
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(restoreConstructorState(isAuthenticated));
+        }
+    }, [isAuthenticated, dispatch]);
+
+    // Эффект для сохранения состояния конструктора при изменениях (только для авторизованных пользователей)
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(saveConstructorState(isAuthenticated));
+        }
+    }, [bun, constructorIngredients, isAuthenticated, dispatch]);
+
     // Эффект для открытия модального окна при успешном создании заказа
     useEffect(() => {
         if (orderNumber && !orderLoading && !orderError) {
@@ -111,9 +157,20 @@ export default function BurgerConstructor() {
 
     /**
      * Обработчик клика по кнопке "Оформить заказ"
-     * Создает заказ через API
+     * Проверяет авторизацию пользователя и создает заказ через API
      */
     const handleOrderClick = () => {
+        // Если пользователь не авторизован, перенаправляем на страницу логина
+        // с сохранением текущего пути для возврата после авторизации
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { from: '/' },
+                replace: false 
+            });
+            return;
+        }
+        
+        // Если пользователь авторизован, создаем заказ
         dispatch(createOrder(bun, constructorIngredients));
     };
 
@@ -221,28 +278,45 @@ export default function BurgerConstructor() {
             {/* Блок с итоговой стоимостью и кнопкой заказа */}
 
             {(chosenBun || (chosenMiddleIngredients && chosenMiddleIngredients.length > 0)) &&
-                <div className={`${styles.bill} mt-6`}>
-                    
-                    {/* Отображение общей стоимости */}
-                    <div className={styles.bill__sum}>
-                        <p className="text text_type_digits-medium">
-                            {totalPrice}
-                        </p>
+                <>
+                    <div className={`${styles.bill} mt-6`}>
+                        
+                        {/* Отображение общей стоимости */}
+                        <div className={styles.bill__sum}>
+                            <p className="text text_type_digits-medium">
+                                {totalPrice}
+                            </p>
 
-                        <CurrencyIcon type="primary" />
+                            <CurrencyIcon type="primary" />
+                        </div>
+
+                        {/* Кнопка оформления заказа */}
+                        <Button 
+                            htmlType="button" 
+                            type="primary" 
+                            size="large" 
+                            onClick={handleOrderClick}
+                            disabled={orderLoading}
+                        >
+                            {orderLoading ? 'Оформление...' : 'Оформить заказ'}
+                        </Button>
                     </div>
 
-                    {/* Кнопка оформления заказа */}
-                    <Button 
-                        htmlType="button" 
-                        type="primary" 
-                        size="large" 
-                        onClick={handleOrderClick}
-                        disabled={orderLoading}
-                    >
-                        {orderLoading ? 'Оформление...' : 'Оформить заказ'}
-                    </Button>
-                </div>
+                    {/* Прелоадер и счетчик времени */}
+                    {orderLoading && (
+                        <div className={styles.loader__row}>
+                            <div className={styles.dotsLoader}>
+                                <div className={styles.dot}></div>
+                                <div className={styles.dot}></div>
+                                <div className={styles.dot}></div>
+                            </div>
+                            
+                            <p className="text text_type_main-small text_color_inactive">
+                                Создаем заказ... {orderTimer}/15 сек
+                            </p>
+                        </div>
+                    )}
+                </>
             }
 
             {/* Модальное окно с деталями заказа */}

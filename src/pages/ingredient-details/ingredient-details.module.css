@@ -1,0 +1,18 @@
+.container {
+    justify-self: center;
+    grid-column: 1 / -1;
+    
+    max-width: 520px;
+    width: 100%;
+    margin-top: 80px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.error__message {
+    text-align: center;
+    color: #8585ad;
+    margin-top: 50px;
+}

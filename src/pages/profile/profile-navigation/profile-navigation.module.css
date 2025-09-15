@@ -1,0 +1,35 @@
+.navigationContainer {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+}
+
+.navLink {
+    display: block;
+    cursor: pointer;
+    width: fit-content;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    border: none;
+    background: none;
+}
+
+.navLink:hover {
+    color: #F2F2F3;
+}
+
+.navLinkActive {
+    color: #F2F2F3;
+}
+
+.tooltip {
+    max-width: 320px;
+    line-height: 1.4;
+}

@@ -1,0 +1,64 @@
+.container {
+    justify-self: center;
+    grid-column: 1 / -1;
+    
+    max-width: 480px;
+    width: 100%;
+    margin-top: 140px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+    color: #F2F2F3;
+}
+
+.form {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 24px;
+}
+
+.input {
+    width: 100%;
+}
+
+.button {
+    width: 100%;
+}
+
+.links {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 16px;
+    
+    text-align: center;
+}
+
+.text {
+    margin: 0;
+}
+
+.link {
+    color: #4C4CFF;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.link:hover {
+    opacity: 0.7;
+}
+
+.error {
+    color: #E52B1A;
+    text-align: center;
+}
+
+.success {
+    text-align: center;
+}

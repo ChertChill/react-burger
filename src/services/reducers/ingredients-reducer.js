@@ -6,7 +6,8 @@ import {
   SET_INGREDIENTS_LOADING, 
   SET_INGREDIENTS_ERROR,
   INCREMENT_INGREDIENT_COUNT,
-  DECREMENT_INGREDIENT_COUNT
+  DECREMENT_INGREDIENT_COUNT,
+  RESTORE_INGREDIENT_COUNTERS
 } from '../actions/action-types';
 
 /**
@@ -95,6 +96,21 @@ const ingredientsReducer = (state = initialState, action) => {
             }
           }
           return ingredient;
+        })
+      };
+      
+    case RESTORE_INGREDIENT_COUNTERS:
+      return {
+        ...state,
+        ingredients: (state.ingredients || []).map(ingredient => {
+          const savedCount = action.payload[ingredient._id];
+          if (savedCount && savedCount > 0) {
+            return { ...ingredient, count: savedCount };
+          } else {
+            // Удаляем свойство count если счетчик не сохранен или равен 0
+            const { count, ...ingredientWithoutCount } = ingredient;
+            return ingredientWithoutCount;
+          }
         })
       };
       

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './burger-ingredients.module.css';
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import CategoryBlock from "../category-block/category-block";
@@ -12,12 +13,17 @@ import { setCurrentIngredient, clearCurrentIngredient } from '../../services/act
  * Компонент для отображения списка ингредиентов
  * Содержит табы для переключения между категориями (булки, соусы, начинки),
  * автоматически переключает активный таб при скролле и позволяет
- * просматривать детали ингредиентов в модальном окне
+ * просматривать детали ингредиентов в модальном окне при клике на ингредиент.
+ * При клике на ингредиент происходит переход на маршрут /ingredients/:id,
+ * который отображает модальное окно с деталями ингредиента.
  */
 export default function BurgerIngredients() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
     
     const { ingredients } = useSelector(state => state.ingredients);
+    const { currentIngredient } = useSelector(state => state.ingredientDetails);
     const [current, setCurrent] = useState('bun');                          // Состояние активного таба
     const { isModalOpen, openModal, closeModal } = useModal();              // Кастомный хук для управления модальным окном
 
@@ -98,23 +104,51 @@ export default function BurgerIngredients() {
 
     /**
      * Обработчик клика по ингредиенту
-     * Открывает модальное окно с деталями ингредиента
+     * Переходит на маршрут /ingredients/:id для отображения модального окна
      * @param {Object} ingredient - объект ингредиента
      */
     const handleIngredientClick = (ingredient) => {
         dispatch(setCurrentIngredient(ingredient));
-        openModal();
+        navigate(`/ingredients/${ingredient._id}`, { 
+            state: { from: 'home' } 
+        });
     };
 
 
 
     /**
      * Функция для закрытия модального окна
+     * Возвращает пользователя на главную страницу и очищает данные ингредиента
      */
     const handleCloseModal = () => {
         closeModal();
         dispatch(clearCurrentIngredient());
+        navigate('/', { replace: true });
     };
+
+    // Эффект для управления модальным окном при изменении маршрута
+    useEffect(() => {
+        const pathname = location.pathname;
+        
+        // Если мы находимся на странице ингредиента (/ingredients/:id)
+        if (pathname.startsWith('/ingredients/') && pathname !== '/ingredients') {
+            const ingredientId = pathname.split('/')[2];
+            
+            // Если есть ингредиент в store и он соответствует текущему маршруту
+            if (currentIngredient && currentIngredient._id === ingredientId) {
+                // Открываем модальное окно
+                if (!isModalOpen) {
+                    openModal();
+                }
+            }
+        } else {
+            // Если мы не на странице ингредиента, закрываем модальное окно
+            if (isModalOpen) {
+                closeModal();
+                dispatch(clearCurrentIngredient());
+            }
+        }
+    }, [location.pathname, currentIngredient, isModalOpen, openModal, closeModal, dispatch]);
 
     // Эффект для добавления слушателя скролла
     useEffect(() => {

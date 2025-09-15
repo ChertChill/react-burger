@@ -8,6 +8,7 @@ import {
   CLEAR_ORDER
 } from './action-types';
 import { request } from '../../utils/checkResponse';
+import { authHeaders } from '../../utils/tokenUtils';
 
 /**
  * Синхронные action creators для управления заказами
@@ -56,6 +57,7 @@ export const clearOrder = () => ({
  * Асинхронный action creator для создания заказа
  * Отправляет запрос на сервер с данными о выбранных ингредиентах
  * Включает валидацию наличия булки и начинки
+ * Автоматически обновляет токен при необходимости
  * @param {Object} bun - объект выбранной булки
  * @param {Array} constructorIngredients - массив ингредиентов конструктора
  * @returns {Function} thunk функция для создания заказа
@@ -83,9 +85,7 @@ export const createOrder = (bun, constructorIngredients) => {
       
       const data = await request('orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: authHeaders.getHeaders(),
         body: JSON.stringify({
           ingredients: ingredientIds
         })
