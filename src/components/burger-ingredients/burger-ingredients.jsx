@@ -1,22 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './burger-ingredients.module.css';
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import CategoryBlock from "../category-block/category-block";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-import { IngredientType } from '../../utils/types';
 import { useModal } from '../../hooks';
+import { setCurrentIngredient, clearCurrentIngredient } from '../../services/actions';
 
 /**
  * Компонент для отображения списка ингредиентов
  * Содержит табы для переключения между категориями (булки, соусы, начинки),
  * автоматически переключает активный таб при скролле и позволяет
- * просматривать детали ингредиентов в модальном окне
+ * просматривать детали ингредиентов в модальном окне при клике на ингредиент.
+ * При клике на ингредиент происходит переход на маршрут /ingredients/:id,
+ * который отображает модальное окно с деталями ингредиента.
  */
-export default function BurgerIngredients({ingredients}) {
+export default function BurgerIngredients() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    
+    const { ingredients } = useSelector(state => state.ingredients);
+    const { currentIngredient } = useSelector(state => state.ingredientDetails);
     const [current, setCurrent] = useState('bun');                          // Состояние активного таба
-    const [selectedIngredient, setSelectedIngredient] = useState(null);     // Состояние выбранного ингредиента для модального окна
     const { isModalOpen, openModal, closeModal } = useModal();              // Кастомный хук для управления модальным окном
 
     // Ссылки на контейнер и секции категорий для отслеживания скролла
@@ -45,50 +53,125 @@ export default function BurgerIngredients({ingredients}) {
     /**
      * Обработчик скролла контейнера
      * Автоматически определяет ближайшую категорию и переключает активный таб
+     * Использует getBoundingClientRect для точного определения позиции заголовков
      */
     const handleContainerScroll = React.useCallback(() => {
-        const containerTop = containerRef.current.getBoundingClientRect().top;
+        if (!containerRef.current) return;
 
-        let closestCategory = 'bun';
-        let minDelta = Infinity;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const containerTop = containerRect.top;
+        
+        // Порог для определения активной категории (в пикселях от верха контейнера)
+        const threshold = 50;
 
-        for (const item in categoryRefs) {
-            const delta = Math.abs(categoryRefs[item].current.getBoundingClientRect().top - containerTop);
+        let activeCategory = 'bun';
+        let minDistance = Infinity;
 
-            if (delta < minDelta) {
-                minDelta = delta;
-                closestCategory = item;
+        // Проверяем каждую категорию
+        Object.entries(categoryRefs).forEach(([categoryName, ref]) => {
+            if (!ref.current) return;
+
+            const categoryRect = ref.current.getBoundingClientRect();
+            const categoryTop = categoryRect.top;
+            
+            // Вычисляем расстояние от верха контейнера до заголовка категории
+            const distanceFromTop = Math.abs(categoryTop - containerTop);
+            
+            // Если заголовок категории находится в видимой области или близко к верху
+            if (categoryTop <= containerTop + threshold && distanceFromTop < minDistance) {
+                minDistance = distanceFromTop;
+                activeCategory = categoryName;
             }
+        });
+
+        // Если ни одна категория не подходит по критериям, выбираем ту, которая ближе всего к верху
+        if (minDistance === Infinity) {
+            Object.entries(categoryRefs).forEach(([categoryName, ref]) => {
+                if (!ref.current) return;
+
+                const categoryRect = ref.current.getBoundingClientRect();
+                const distanceFromTop = Math.abs(categoryRect.top - containerTop);
+                
+                if (distanceFromTop < minDistance) {
+                    minDistance = distanceFromTop;
+                    activeCategory = categoryName;
+                }
+            });
         }
 
-        setCurrent(closestCategory);
+        setCurrent(activeCategory);
     }, [categoryRefs]);
 
     /**
      * Обработчик клика по ингредиенту
-     * Открывает модальное окно с деталями ингредиента
+     * Переходит на маршрут /ingredients/:id для отображения модального окна
      * @param {Object} ingredient - объект ингредиента
      */
     const handleIngredientClick = (ingredient) => {
-        setSelectedIngredient(ingredient);
-        openModal();
+        dispatch(setCurrentIngredient(ingredient));
+        navigate(`/ingredients/${ingredient._id}`, { 
+            state: { from: 'home' } 
+        });
     };
+
+
 
     /**
      * Функция для закрытия модального окна
+     * Возвращает пользователя на главную страницу и очищает данные ингредиента
      */
     const handleCloseModal = () => {
         closeModal();
-        setSelectedIngredient(null);
+        dispatch(clearCurrentIngredient());
+        navigate('/', { replace: true });
     };
+
+    // Эффект для управления модальным окном при изменении маршрута
+    useEffect(() => {
+        const pathname = location.pathname;
+        
+        // Если мы находимся на странице ингредиента (/ingredients/:id)
+        if (pathname.startsWith('/ingredients/') && pathname !== '/ingredients') {
+            const ingredientId = pathname.split('/')[2];
+            
+            // Если есть ингредиент в store и он соответствует текущему маршруту
+            if (currentIngredient && currentIngredient._id === ingredientId) {
+                // Открываем модальное окно
+                if (!isModalOpen) {
+                    openModal();
+                }
+            }
+        } else {
+            // Если мы не на странице ингредиента, закрываем модальное окно
+            if (isModalOpen) {
+                closeModal();
+                dispatch(clearCurrentIngredient());
+            }
+        }
+    }, [location.pathname, currentIngredient, isModalOpen, openModal, closeModal, dispatch]);
 
     // Эффект для добавления слушателя скролла
     useEffect(() => {
         const container = containerRef.current;
-        container.addEventListener('scroll', handleContainerScroll);
+        if (!container) return;
+
+        // Добавляем throttling для оптимизации производительности
+        let ticking = false;
+        
+        const throttledScrollHandler = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    handleContainerScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        container.addEventListener('scroll', throttledScrollHandler);
 
         return () => {
-            container.removeEventListener('scroll', handleContainerScroll);
+            container.removeEventListener('scroll', throttledScrollHandler);
         }
     }, [handleContainerScroll]);
 
@@ -116,47 +199,46 @@ export default function BurgerIngredients({ingredients}) {
             {/* Контейнер с категориями ингредиентов */}
             <div ref={containerRef} className={`${styles.categories__group} mt-10`}>
                 
-                {/* Секция с булками */}
-                <CategoryBlock 
-                    ref={bunRef} 
-                    title="Булки" 
-                    items={ingredients.filter((item) => item.type === 'bun')} 
-                    onIngredientClick={handleIngredientClick}
-                />
+                {ingredients && ingredients.length > 0 && (
+                    <>
+                        {/* Секция с булками */}
+                        <CategoryBlock 
+                            ref={bunRef} 
+                            title="Булки" 
+                            items={ingredients.filter((item) => item.type === 'bun')} 
+                            onIngredientClick={handleIngredientClick}
+                        />
 
-                {/* Секция с соусами */}
-                <CategoryBlock 
-                    ref={sauceRef} 
-                    title="Соусы" 
-                    items={ingredients.filter((item) => item.type === 'sauce')} 
-                    onIngredientClick={handleIngredientClick}
-                />
+                        {/* Секция с соусами */}
+                        <CategoryBlock 
+                            ref={sauceRef} 
+                            title="Соусы" 
+                            items={ingredients.filter((item) => item.type === 'sauce')} 
+                            onIngredientClick={handleIngredientClick}
+                        />
 
-                {/* Секция с начинками */}
-                <CategoryBlock 
-                    ref={mainRef} 
-                    title="Начинки" 
-                    items={ingredients.filter((item) => item.type === 'main')} 
-                    onIngredientClick={handleIngredientClick}
-                />
+                        {/* Секция с начинками */}
+                        <CategoryBlock 
+                            ref={mainRef} 
+                            title="Начинки" 
+                            items={ingredients.filter((item) => item.type === 'main')} 
+                            onIngredientClick={handleIngredientClick}
+                        />
+                    </>
+                )}
                 
             </div>
 
             {/* Модальное окно с деталями ингредиента */}
-
-            {isModalOpen && selectedIngredient && (
+            {isModalOpen && (
                 <Modal 
                     title="Детали ингредиента" 
                     handleClose={handleCloseModal}
                 >
-                    <IngredientDetails ingredient={selectedIngredient} />
+                    <IngredientDetails />
                 </Modal>
             )}
             
         </section>
     )
 }
-
-BurgerIngredients.propTypes = {
-    ingredients: PropTypes.arrayOf(IngredientType).isRequired
-};

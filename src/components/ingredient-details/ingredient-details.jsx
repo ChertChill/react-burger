@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import styles from './ingredient-details.module.css';
 import Loader from '../loader/loader';
 import NutritionItem from '../nutrition-item/nutrition-item';
-import { IngredientType } from '../../utils/types';
 
 /**
  * Компонент для отображения детальной информации об ингредиенте
  * Показывает большое изображение, название и пищевую ценность ингредиента
  * Обрабатывает загрузку изображения с индикатором загрузки и обработкой ошибок
  */
-export default function IngredientDetails({ ingredient }) {
+export default function IngredientDetails() {
+    const ingredient = useSelector(state => state.ingredientDetails.currentIngredient);
     const [imageLoading, setImageLoading] = useState(true);     // Состояние загрузки изображения
     const [imageError, setImageError] = useState(false);        // Состояние ошибки загрузки изображения
 
@@ -79,7 +79,3 @@ export default function IngredientDetails({ ingredient }) {
         </div>
     );
 }
-
-IngredientDetails.propTypes = {
-    ingredient: IngredientType.isRequired
-};

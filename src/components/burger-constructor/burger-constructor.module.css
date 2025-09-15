@@ -14,6 +14,18 @@
         flex-shrink: 0;
     }
 
+    .drop-zone {
+        min-height: 80px;
+        width: 100%;
+        position: relative;
+    }
+
+    .element__bun {
+        display: block;
+        min-height: 80px;
+        position: relative;
+    }
+
         .element__bun > div, .element > div {
             max-width: 100%;
         }
@@ -46,6 +58,79 @@
             cursor: grab;
         }
 
+        .element {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .element.dragging {
+            opacity: 0.25 !important;
+        }
+
+        /* Дополнительная проверка для элементов в состоянии перетаскивания */
+        .element[data-handler-id]:global(.dragging) {
+            opacity: 0.25 !important;
+        }
+
+        /* Стили для элементов с атрибутом data-dragging="true" */
+        .element[data-dragging="true"] {
+            opacity: 0.25 !important;
+        }
+
+            .element__bun {
+        cursor: default;
+    }
+
+    /* Глобальные стили для курсоров при перетаскивании */
+    :global(.dragging) {
+        cursor: grabbing !important;
+    }
+
+    :global(.dragging *) {
+        cursor: grabbing !important;
+    }
+
+    /* Глобальные стили для drag preview (теневой копии) */
+    :global([data-rbd-draggable-context-id]) {
+        opacity: 0.25 !important;
+    }
+
+    /* Кроссбраузерные стили для drag preview */
+    :global([data-rbd-draggable-context-id] *) {
+        opacity: 0.25 !important;
+    }
+
+    /* Дополнительные селекторы для разных браузеров */
+    :global([data-rbd-draggable-context-id][style*="opacity"]) {
+        opacity: 0.25 !important;
+    }
+
+    .drop-target {
+        border: 2px dashed #4c4cff;
+        border-radius: 8px;
+        background-color: rgba(76, 76, 255, 0.1);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80px;
+        width: 100%;
+        border: 2px dashed #8585ad;
+        border-radius: 8px;
+        background-color: rgba(133, 133, 173, 0.05);
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .placeholder-active {
+        border-color: #4c4cff;
+        background-color: rgba(76, 76, 255, 0.1);
+    }
+
     .bill {
         display: flex;
         flex-flow: row nowrap;
@@ -63,3 +148,69 @@
             align-items: center;
             gap: 8px;
         }
+
+    .error {
+        width: fit-content;
+        margin: 0 auto;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 16px;
+        border-radius: 4px;
+        background-color: rgba(255, 0, 0, 0.1);
+        border: 1px solid #ff0000;
+    }
+
+    .loader__row {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 8px 12px;
+        border-radius: 8px;
+        z-index: 1000;
+    }
+
+    .dotsLoader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #8585AD;
+        animation: dotsAnimation 1.4s infinite ease-in-out both;
+    }
+
+    .dot:nth-child(1) {
+        animation-delay: -0.32s;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: -0.16s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: 0s;
+    }
+
+    @keyframes dotsAnimation {
+        0%, 80%, 100% {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }

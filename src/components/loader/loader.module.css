@@ -2,9 +2,13 @@
     color: #8585AD;
     display: inline-block;
     position: relative;
+
+    align-self: center;
+    justify-self: center;
+    grid-column: 1 / -1;
 }
 
-/* Размеры лоадера */
+/* Размеры лоадера - маленький */
 .small {
     width: 40px;
     height: 40px;
@@ -20,6 +24,7 @@
     margin: -1.8px 0 0 -1.8px;
 }
 
+/* Размеры лоадера - средний */
 .medium {
     width: 80px;
     height: 80px;
@@ -62,7 +67,7 @@
     background: currentColor;
 }
 
-/* Позиционирование точек для разных размеров */
+/* Позиционирование точек для маленького размера */
 .small div:nth-child(1):after {
     top: 31.31371px;
     left: 31.31371px;
@@ -103,6 +108,7 @@
     left: 6.14359px;
 }
 
+/* Позиционирование точек для среднего размера */
 .medium div:nth-child(1):after {
     top: 62.62742px;
     left: 62.62742px;
@@ -143,6 +149,7 @@
     left: 12.28719px;
 }
 
+/* Позиционирование точек для большого размера */
 .large div:nth-child(1):after {
     top: 93.94113px;
     left: 93.94113px;
@@ -183,7 +190,7 @@
     left: 18.43078px;
 }
 
-/* Анимация */
+/* Ключевые кадры анимации вращения */
 @keyframes lds-roller {
   0% {
     transform: rotate(0deg);

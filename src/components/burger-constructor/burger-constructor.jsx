@@ -1,31 +1,85 @@
-import React, { useEffect, useRef, useState } from "react";
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useDrop } from 'react-dnd';
 import styles from './burger-constructor.module.css';
-import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { ConstructorElement, Button, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
-import { IngredientType } from '../../utils/types';
 import { useModal } from '../../hooks';
+import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor, clearConstructor, saveConstructorState, restoreConstructorState } from '../../services/actions';
+import DraggableConstructorItem from './draggable-constructor-item';
 
 /**
  * Компонент конструктора бургеров
  * Отображает выбранные ингредиенты в виде конструктора,
  * позволяет оформить заказ и показывает итоговую стоимость
  */
-export default function BurgerConstructor({ingredients}) {
+export default function BurgerConstructor() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const { bun, constructorIngredients } = useSelector(state => state.constructor);
+    const { loading: orderLoading, error: orderError, orderNumber } = useSelector(state => state.order);
+    const { isAuthenticated } = useSelector(state => state.auth);
     const [hasOverflow, setHasOverflow] = useState(false);      // Состояние для отслеживания переполнения контейнера с ингредиентами
+    const [orderTimer, setOrderTimer] = useState(0);            // Счетчик времени создания заказа
     const { isModalOpen, openModal, closeModal } = useModal();  // Кастомный хук для управления модальным окном
-    const [orderNumber, setOrderNumber] = useState(null);       // Состояние для хранения номера заказа
     
     // Ссылка на контейнер с ингредиентами для проверки переполнения
     const middleElementsRef = useRef(null);
-    
-    // Тестовые ингредиенты, позже заменю на логику получения (и выбора) ингредиентов
-    const chosenIngredients = [ ingredients[0], ingredients[1], ingredients[6], ingredients[8], ingredients[13], ingredients[6], ingredients[8], ingredients[13] ];
 
-    // Разделение ингредиентов на булку и начинку
-    const chosenBun = chosenIngredients.find(ingredient => ingredient.type === 'bun') || null;
-    const chosenMiddleIngredients = chosenIngredients.filter(ingredient => ingredient.type !== 'bun') || null;
+    // Общая функция для обработки drop булки
+    const handleBunDrop = (item) => {
+        if (item.type === 'bun') {
+            dispatch(setBun(item));
+        }
+    };
+
+    // Drop функциональность для булки (верхняя)
+    const [{ isOverBunTop }, dropBunTop] = useDrop({
+        accept: 'ingredient',
+        drop: handleBunDrop,
+        collect: (monitor) => ({
+            isOverBunTop: monitor.isOver(),
+        }),
+    });
+
+    // Drop функциональность для булки (нижняя)
+    const [{ isOverBunBottom }, dropBunBottom] = useDrop({
+        accept: 'ingredient',
+        drop: handleBunDrop,
+        collect: (monitor) => ({
+            isOverBunBottom: monitor.isOver(),
+        }),
+    });
+
+    // Общее состояние для подсветки булок
+    const isOverBun = isOverBunTop || isOverBunBottom;
+
+    // Drop функциональность для начинок
+    const [{ isOverMiddle }, dropMiddle] = useDrop({
+        accept: 'ingredient',
+        drop: (item) => {
+            if (item.type !== 'bun') {
+                dispatch(addIngredientToConstructor(item));
+            }
+        },
+        collect: (monitor) => ({
+            isOverMiddle: monitor.isOver(),
+        }),
+    });
+    
+    // Используем данные из Redux store с мемоизацией
+    const chosenBun = useMemo(() => bun, [bun]);
+    const chosenMiddleIngredients = useMemo(() => constructorIngredients, [constructorIngredients]);
+
+    // Мемоизированный расчёт итоговой стоимости бургера
+    const totalPrice = useMemo(() => {
+        const bunPrice = chosenBun ? chosenBun.price * 2 : 0; // Булка учитывается дважды (верх и низ)
+        const ingredientsPrice = chosenMiddleIngredients ? chosenMiddleIngredients.reduce((total, ingredient) => total + ingredient.price, 0) : 0;
+        return bunPrice + ingredientsPrice;
+    }, [chosenBun, chosenMiddleIngredients]);
 
     /**
      * Функция для проверки переполнения контейнера с ингредиентами
@@ -50,110 +104,229 @@ export default function BurgerConstructor({ingredients}) {
         };
     }, [chosenMiddleIngredients]);
 
+    // Эффект для отслеживания времени создания заказа
+    useEffect(() => {
+        let interval;
+        
+        if (orderLoading) {
+            setOrderTimer(0);
+            interval = setInterval(() => {
+                setOrderTimer(prev => {
+                    const newTime = prev + 1;
+                    // Если прошло 15 секунд, останавливаем счетчик
+                    if (newTime >= 15) {
+                        clearInterval(interval);
+                        return 15;
+                    }
+                    return newTime;
+                });
+            }, 1000);
+        } else {
+            setOrderTimer(0);
+        }
+        
+        return () => {
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [orderLoading]);
+
+    // Эффект для восстановления состояния конструктора при загрузке приложения
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(restoreConstructorState(isAuthenticated));
+        }
+    }, [isAuthenticated, dispatch]);
+
+    // Эффект для сохранения состояния конструктора при изменениях (только для авторизованных пользователей)
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(saveConstructorState(isAuthenticated));
+        }
+    }, [bun, constructorIngredients, isAuthenticated, dispatch]);
+
+    // Эффект для открытия модального окна при успешном создании заказа
+    useEffect(() => {
+        if (orderNumber && !orderLoading && !orderError) {
+            openModal();
+            // Очищаем конструктор после успешного получения номера заказа
+            dispatch(clearConstructor());
+        }
+    }, [orderNumber, orderLoading, orderError, openModal, dispatch]);
+
     /**
      * Обработчик клика по кнопке "Оформить заказ"
-     * Генерирует случайный номер заказа и открывает модальное окно
+     * Проверяет авторизацию пользователя и создает заказ через API
      */
     const handleOrderClick = () => {
-        const randomOrderNumber = Math.floor(Math.random() * 1000000) + 100000;   // Тестовое рандомное число для заказа
+        // Если пользователь не авторизован, перенаправляем на страницу логина
+        // с сохранением текущего пути для возврата после авторизации
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { from: '/' },
+                replace: false 
+            });
+            return;
+        }
+        
+        // Если пользователь авторизован, создаем заказ
+        dispatch(createOrder(bun, constructorIngredients));
+    };
 
-        setOrderNumber(randomOrderNumber);
-        openModal();
+    /**
+     * Функция для закрытия модального окна
+     */
+    const handleCloseModal = () => {
+        closeModal();
+        dispatch(clearOrder());
+    };
+
+    /**
+     * Обработчик удаления ингредиента из конструктора
+     */
+    const handleRemoveIngredient = (index, ingredientId) => {
+        dispatch(removeIngredientFromConstructor(index, ingredientId));
     };
 
     return (
         <section className={`${styles.group} pt-15`}>
 
             {/* Верхняя булка */}
-           
-            {chosenBun &&
+            <div 
+                ref={dropBunTop}
+                className={`${styles['drop-zone']} ${isOverBun && chosenBun ? styles['drop-target'] : ''}`}
+            >
                 <div className={styles.element__bun}>
-                    <ConstructorElement
-                        type="top"
-                        isLocked={true}
-                        text={chosenBun.name + ' (верх)'}
-                        price={chosenBun.price}
-                        thumbnail={chosenBun.image}
-                    />
+                    {chosenBun ? (
+                        <ConstructorElement
+                            type="top"
+                            isLocked={true}
+                            text={chosenBun.name + ' (верх)'}
+                            price={chosenBun.price}
+                            thumbnail={chosenBun.image}
+                        />
+                    ) : (
+                        <div className={`${styles.placeholder} ${isOverBun ? styles['placeholder-active'] : ''}`}>
+                            <p className="text text_type_main-default text_color_inactive">
+                                Выберите булку
+                            </p>
+                        </div>
+                    )}
                 </div>
-            }
+            </div>
 
             {/* Контейнер с начинкой и соусом бургера */}
-
-            {chosenMiddleIngredients &&
-                <div 
-                    ref={middleElementsRef}
-                    className={`${styles.middle__elements} ${hasOverflow ? styles.overflow : ''}`}
-                >
-                    {chosenMiddleIngredients.map((ingredient, index) => (
-                        <div key={index} className={styles.element}>
-                            <DragIcon type="primary" />
-
-                            <ConstructorElement
-                                text={ingredient.name}
-                                price={ingredient.price}
-                                thumbnail={ingredient.image}
-                            />
-                        </div>
-                    ))}
-                </div>
-            }
+            <div 
+                ref={(node) => {
+                    middleElementsRef.current = node;
+                    dropMiddle(node);
+                }}
+                className={`${styles['drop-zone']} ${styles.middle__elements} ${hasOverflow ? styles.overflow : ''} ${isOverMiddle && chosenMiddleIngredients && chosenMiddleIngredients.length > 0 ? styles['drop-target'] : ''}`}
+            >
+                {chosenMiddleIngredients && chosenMiddleIngredients.length > 0 ? (
+                    chosenMiddleIngredients.map((ingredient, index) => (
+                        <DraggableConstructorItem 
+                            key={ingredient.id} 
+                            ingredient={ingredient} 
+                            index={index}
+                            onRemove={handleRemoveIngredient}
+                        />
+                    ))
+                ) : (
+                    <div className={`${styles.placeholder} ${isOverMiddle ? styles['placeholder-active'] : ''}`}>
+                        <p className="text text_type_main-default text_color_inactive">
+                            Выберите начинку
+                        </p>
+                    </div>
+                )}
+            </div>
 
             {/* Нижняя булка */}
-
-            {chosenBun &&
+            <div 
+                ref={dropBunBottom}
+                className={`${styles['drop-zone']} ${isOverBun && chosenBun ? styles['drop-target'] : ''}`}
+            >
                 <div className={styles.element__bun}>
-                    <ConstructorElement
-                        type="bottom"
-                        isLocked={true}
-                        text={chosenBun.name + ' (низ)'}
-                        price={chosenBun.price}
-                        thumbnail={chosenBun.image}
-                    />
+                    {chosenBun ? (
+                        <ConstructorElement
+                            type="bottom"
+                            isLocked={true}
+                            text={chosenBun.name + ' (низ)'}
+                            price={chosenBun.price}
+                            thumbnail={chosenBun.image}
+                        />
+                    ) : (
+                        <div className={`${styles.placeholder} ${isOverBun ? styles['placeholder-active'] : ''}`}>
+                            <p className="text text_type_main-default text_color_inactive">
+                                Выберите булку
+                            </p>
+                        </div>
+                    )}
                 </div>
-            }
+            </div>
+
+            {/* Отображение ошибки заказа */}
+            {orderError && (
+                <div className={`${styles.error}`}>
+                    <p className="text text_type_main-default text_color_error">
+                        {orderError}
+                    </p>
+                </div>
+            )}
 
             {/* Блок с итоговой стоимостью и кнопкой заказа */}
 
-            {(chosenBun || chosenMiddleIngredients) &&
-                <div className={`${styles.bill} mt-6`}>
-                    
-                    {/* Отображение общей стоимости */}
-                    <div className={styles.bill__sum}>
-                        <p className="text text_type_digits-medium">
-                            {(chosenBun ? chosenBun.price * 2 : 0) + chosenMiddleIngredients.reduce((total, ingredient) => total + ingredient.price, 0)}
-                        </p>
+            {(chosenBun || (chosenMiddleIngredients && chosenMiddleIngredients.length > 0)) &&
+                <>
+                    <div className={`${styles.bill} mt-6`}>
+                        
+                        {/* Отображение общей стоимости */}
+                        <div className={styles.bill__sum}>
+                            <p className="text text_type_digits-medium">
+                                {totalPrice}
+                            </p>
 
-                        <CurrencyIcon type="primary" />
+                            <CurrencyIcon type="primary" />
+                        </div>
+
+                        {/* Кнопка оформления заказа */}
+                        <Button 
+                            htmlType="button" 
+                            type="primary" 
+                            size="large" 
+                            onClick={handleOrderClick}
+                            disabled={orderLoading}
+                        >
+                            {orderLoading ? 'Оформление...' : 'Оформить заказ'}
+                        </Button>
                     </div>
 
-                    {/* Кнопка оформления заказа */}
-                    <Button htmlType="button" type="primary" size="large" onClick={handleOrderClick}>
-                        Оформить заказ
-                    </Button>
-                </div>
+                    {/* Прелоадер и счетчик времени */}
+                    {orderLoading && (
+                        <div className={styles.loader__row}>
+                            <div className={styles.dotsLoader}>
+                                <div className={styles.dot}></div>
+                                <div className={styles.dot}></div>
+                                <div className={styles.dot}></div>
+                            </div>
+                            
+                            <p className="text text_type_main-small text_color_inactive">
+                                Создаем заказ... {orderTimer}/15 сек
+                            </p>
+                        </div>
+                    )}
+                </>
             }
-
-            {/* Сообщение при отсутствии ингредиентов */}
-                
-            {chosenIngredients.length === 0 && (
-                <p className="text text_type_main-large">
-                    Добавьте ингредиенты для бургера!
-                </p>
-            )}
 
             {/* Модальное окно с деталями заказа */}
 
             {isModalOpen && (
-                <Modal title="" handleClose={closeModal}>
-                    <OrderDetails orderNumber={orderNumber} />
+                <Modal title="" handleClose={handleCloseModal}>
+                    <OrderDetails />
                 </Modal>
             )}
 
         </section>
     )
 }
-
-BurgerConstructor.propTypes = {
-    ingredients: PropTypes.arrayOf(IngredientType).isRequired
-};

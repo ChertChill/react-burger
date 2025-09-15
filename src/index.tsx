@@ -1,16 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './components/app/app';
+import store from './services/store/store';
 import reportWebVitals from './reportWebVitals';
 
+/**
+ * Создание корневого элемента для рендеринга React приложения
+ * Получает DOM элемент с id 'root' из HTML файла
+ */
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+/**
+ * Рендеринг основного компонента приложения
+ * Оборачивает приложение в Redux Provider для доступа к store
+ * Включает React.StrictMode для дополнительных проверок в режиме разработки
+ */
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 
