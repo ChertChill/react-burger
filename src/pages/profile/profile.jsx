@@ -1,9 +1,7 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import styles from './profile.module.css';
 import ProfileNavigation from './profile-navigation/profile-navigation';
-import ProfileInfo from './profile-info/profile-info';
-import OrdersHistory from './orders-history/orders-history';
 
 /**
  * Компонент страницы профиля пользователя
@@ -18,10 +16,7 @@ export default function Profile() {
 
                 {/* Контент профиля с вложенными маршрутами */}
                 <div className={styles.profileContent}>
-                    <Routes>
-                        <Route index element={<ProfileInfo />} />
-                        <Route path="orders" element={<OrdersHistory />} />
-                    </Routes>
+                    <Outlet />
                 </div>
             </div>
         </div>

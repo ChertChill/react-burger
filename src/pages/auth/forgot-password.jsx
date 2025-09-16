@@ -4,6 +4,7 @@ import { EmailInput, Button } from '@ya.praktikum/react-developer-burger-ui-comp
 import { forgotPassword } from '../../utils/api';
 import { getErrorText } from '../../utils/getErrorText';
 import { resetPasswordUtils } from '../../utils/tokenUtils';
+import { useForm } from '../../hooks';
 import ProtectedRoute from '../../components/protected-route/protected-route';
 import styles from './auth.module.css';
 
@@ -12,7 +13,7 @@ import styles from './auth.module.css';
  */
 export default function ForgotPassword() {
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
+    const [formData, handleChange] = useForm({ email: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -23,7 +24,7 @@ export default function ForgotPassword() {
         setError('');
         
         try {
-            const response = await forgotPassword(email);
+            const response = await forgotPassword(formData.email);
             if (response.success) {
                 // Устанавливаем флаг доступа к странице reset-password
                 resetPasswordUtils.setResetPasswordAllowed();
@@ -66,18 +67,19 @@ export default function ForgotPassword() {
                             <div className={styles.input}>
                                 <EmailInput
                                     placeholder="Укажите e-mail"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     name="email"
                                     error={!!error}
                                     size="default"
+                                    autoComplete="email"
                                 />
                             </div>
                             
                             <Button 
                                 type="primary" 
                                 size="medium"
-                                disabled={isLoading || !email}
+                                disabled={isLoading || !formData.email}
                             >
                                 {isLoading ? 'Отправка...' : 'Восстановить'}
                             </Button>

@@ -4,6 +4,7 @@ import { Input, PasswordInput, Button } from '@ya.praktikum/react-developer-burg
 import { resetPassword } from '../../utils/api';
 import { getErrorText } from '../../utils/getErrorText';
 import { resetPasswordUtils } from '../../utils/tokenUtils';
+import { useForm } from '../../hooks';
 import ProtectedRoute from '../../components/protected-route/protected-route';
 import styles from './auth.module.css';
 
@@ -12,8 +13,10 @@ import styles from './auth.module.css';
  */
 export default function ResetPassword() {
     const navigate = useNavigate();
-    const [password, setPassword] = useState('');
-    const [token, setToken] = useState('');
+    const [formData, handleChange] = useForm({
+        password: '',
+        token: ''
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -24,7 +27,7 @@ export default function ResetPassword() {
         setError('');
         
         try {
-            const response = await resetPassword(password, token);
+            const response = await resetPassword(formData.password, formData.token);
             if (response.success) {
                 // Очищаем флаг доступа к странице reset-password
                 resetPasswordUtils.removeResetPasswordFlag();
@@ -69,11 +72,12 @@ export default function ResetPassword() {
                             <div className={styles.input}>
                                 <PasswordInput
                                     placeholder="Введите новый пароль"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     name="password"
                                     error={!!error}
                                     size="default"
+                                    autoComplete="new-password"
                                 />
                             </div>
                             
@@ -81,18 +85,19 @@ export default function ResetPassword() {
                                 <Input
                                     type="text"
                                     placeholder="Введите код из письма"
-                                    value={token}
-                                    onChange={(e) => setToken(e.target.value)}
+                                    value={formData.token}
+                                    onChange={handleChange}
                                     name="token"
                                     error={!!error}
                                     size="default"
+                                    autoComplete="one-time-code"
                                 />
                             </div>
 
                             <Button 
                                 type="primary" 
                                 size="medium"
-                                disabled={isLoading || !password || !token}
+                                disabled={isLoading || !formData.password || !formData.token}
                             >
                                 {isLoading ? 'Сохранение...' : 'Сохранить'}
                             </Button>

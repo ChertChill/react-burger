@@ -1,0 +1,41 @@
+.container {
+    justify-self: center;
+    grid-column: 1 / -1;
+    
+    max-width: 480px;
+    width: 100%;
+    margin-top: 140px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.content {
+    max-width: 600px;
+    text-align: center;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.title {
+    font-size: 128px;
+    font-weight: 700;
+    color: #8585ad;
+    line-height: 100%;
+}
+
+.subtitle {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 120%;
+    color: #f2f2f3;
+}
+
+.description {
+    font-size: 18px;
+    line-height: 140%;
+}

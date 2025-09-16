@@ -3,3 +3,4 @@
  * Объединяет все кастомные хуки для удобного импорта в компонентах
  */
 export { useModal } from './useModal';
+export { useForm } from './useForm';

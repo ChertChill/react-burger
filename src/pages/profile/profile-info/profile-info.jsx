@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Input, Button, EmailInput, PasswordInput } from '@ya.praktikum/react-developer-burger-ui-components';
 import { fetchUserData, updateUserProfile } from '../../../services/actions/auth-actions';
 import { getErrorText } from '../../../utils/getErrorText';
+import { useForm } from '../../../hooks';
 import styles from './profile-info.module.css';
 
 /**
@@ -12,7 +13,7 @@ export default function ProfileInfo() {
     const dispatch = useDispatch();
     const { user, isLoading, error } = useSelector(state => state.auth);
     
-    const [formData, setFormData] = useState({
+    const [formData, handleChange, setFormValues] = useForm({
         name: '',
         email: '',
         password: ''
@@ -41,21 +42,18 @@ export default function ProfileInfo() {
                 email: user.email || '',
                 password: '' // Пароль не возвращается API по соображениям безопасности
             };
-            setFormData(userData);
+            setFormValues(userData);
             setOriginalData(userData);
         }
-    }, [user]);
+    }, [user, setFormValues]);
 
     /**
-     * Обработчик изменения полей формы
+     * Обработчик изменения полей формы с отслеживанием изменений
      * @param {Event} e - событие изменения
      */
-    const handleChange = (e) => {
+    const handleFormChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        handleChange(e);
         
         // Проверяем, изменились ли данные по сравнению с оригинальными
         const newData = { ...formData, [name]: value };
@@ -91,7 +89,7 @@ export default function ProfileInfo() {
                 email: formData.email,
                 password: ''
             });
-            setFormData(prev => ({ ...prev, password: '' }));
+            setFormValues({ ...formData, password: '' });
             setIsChanged(false);
         } catch (error) {
             console.error('Ошибка при обновлении профиля:', error);
@@ -102,7 +100,7 @@ export default function ProfileInfo() {
      * Обработчик отмены изменений
      */
     const handleCancel = () => {
-        setFormData(originalData);
+        setFormValues(originalData);
         setIsChanged(false);
     };
 
@@ -129,12 +127,13 @@ export default function ProfileInfo() {
                         type="text"
                         placeholder="Имя"
                         value={formData.name}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         name="name"
                         error={false}
                         size="default"
                         icon="EditIcon"
                         disabled={isLoading}
+                        autoComplete="name"
                     />
                 </div>
                 
@@ -142,12 +141,13 @@ export default function ProfileInfo() {
                     <EmailInput
                         placeholder="E-mail"
                         value={formData.email}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         name="email"
                         error={false}
                         size="default"
                         icon="EditIcon"
                         disabled={isLoading}
+                        autoComplete="email"
                     />
                 </div>
                 
@@ -155,12 +155,13 @@ export default function ProfileInfo() {
                     <PasswordInput
                         placeholder="Новый пароль"
                         value={formData.password}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         name="password"
                         error={false}
                         size="default"
                         icon="EditIcon"
                         disabled={isLoading}
+                        autoComplete="new-password"
                     />
                 </div>
                 

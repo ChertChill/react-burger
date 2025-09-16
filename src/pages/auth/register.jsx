@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Input, EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { register } from '../../services/actions/auth-actions';
 import { clearAuthError } from '../../services/actions/auth-actions';
 import { getErrorText } from '../../utils/getErrorText';
+import { useForm } from '../../hooks';
 import ProtectedRoute from '../../components/protected-route/protected-route';
 import styles from './auth.module.css';
 
@@ -13,10 +14,9 @@ import styles from './auth.module.css';
  */
 export default function Register() {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { isAuthenticated, isLoading, error } = useSelector(state => state.auth);
+    const { isLoading, error } = useSelector(state => state.auth);
     
-    const [formData, setFormData] = useState({
+    const [formData, handleChange, setFormValues] = useForm({
         name: '',
         email: '',
         password: ''
@@ -27,43 +27,18 @@ export default function Register() {
         dispatch(clearAuthError());
     }, [dispatch]);
 
-
     // Сохраняем значения при ошибке для восстановления
     const [savedValues, setSavedValues] = useState(null);
-    const [isRestoring, setIsRestoring] = useState(false);
-    
-    useEffect(() => {
-        if (error && savedValues) {
-            // Восстанавливаем значения при ошибке
-            setIsRestoring(true);
-            setFormData(savedValues);
-            setSavedValues(null);
-            // Сбрасываем флаг восстановления через небольшую задержку
-            setTimeout(() => setIsRestoring(false), 100);
-        }
-    }, [error, savedValues]);
-
 
     /**
-     * Обработчик изменения полей формы
+     * Обработчик изменения полей формы с дополнительной логикой
      * @param {Event} e - событие изменения
      */
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        
-        // Игнорируем пустые значения только во время восстановления значений
-        // Это предотвращает сброс значений компонентом Input при изменении пропа error
-        if (value === '' && formData[name] !== '' && isRestoring) {
-            return;
-        }
-        
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleFormChange = (e) => {
+        handleChange(e);
         
         // Очищаем ошибку только при непустом значении
-        if (error && value.trim() !== '') {
+        if (error && e.target.value.trim() !== '') {
             dispatch(clearAuthError());
         }
     };
@@ -80,13 +55,17 @@ export default function Register() {
         }
 
         // Сохраняем значения перед отправкой
-        setSavedValues({ ...formData });
+        const currentValues = { ...formData };
+        setSavedValues(currentValues);
 
         try {
             await dispatch(register(formData.email, formData.password, formData.name));
             // После успешной регистрации пользователь будет перенаправлен через ProtectedRoute
         } catch (error) {
             console.error('Ошибка при регистрации:', error);
+            // Восстанавливаем значения при ошибке синхронно
+            setFormValues(currentValues);
+            setSavedValues(null);
         }
     };
 
@@ -111,11 +90,12 @@ export default function Register() {
                             type="text"
                             placeholder="Имя"
                             value={formData.name}
-                            onChange={handleChange}
+                            onChange={handleFormChange}
                             name="name"
                             error={!!error}
                             size="default"
                             disabled={isLoading}
+                            autoComplete="name"
                         />
                     </div>
                     
@@ -123,11 +103,12 @@ export default function Register() {
                         <EmailInput
                             placeholder="E-mail"
                             value={formData.email}
-                            onChange={handleChange}
+                            onChange={handleFormChange}
                             name="email"
                             error={!!error}
                             size="default"
                             disabled={isLoading}
+                            autoComplete="email"
                         />
                     </div>
                     
@@ -135,11 +116,12 @@ export default function Register() {
                         <PasswordInput
                             placeholder="Пароль"
                             value={formData.password}
-                            onChange={handleChange}
+                            onChange={handleFormChange}
                             name="password"
                             error={!!error}
                             size="default"
                             disabled={isLoading}
+                            autoComplete="new-password"
                         />
                     </div>
                     

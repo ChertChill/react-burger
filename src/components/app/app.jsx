@@ -11,7 +11,10 @@ import Register from '../../pages/auth/register';
 import ForgotPassword from '../../pages/auth/forgot-password';
 import ResetPassword from '../../pages/auth/reset-password';
 import Profile from '../../pages/profile/profile';
+import ProfileInfo from '../../pages/profile/profile-info/profile-info';
+import OrdersHistory from '../../pages/profile/orders-history/orders-history';
 import IngredientDetailsPage from '../../pages/ingredient-details/ingredient-details';
+import NotFound from '../../pages/not-found/not-found';
 import ProtectedRoute from '../protected-route/protected-route';
 import { fetchIngredients } from '../../services/actions';
 import { fetchUserData } from '../../services/actions/auth-actions';
@@ -93,11 +96,15 @@ export default function App() {
                             Лента заказов (в&nbsp;разработке)
                         </p>
                     } />
-                    <Route path="/profile/*" element={
+                    <Route path="/profile" element={
                         <ProtectedRoute requireAuth={true}>
                             <Profile />
                         </ProtectedRoute>
-                    } />
+                    }>
+                        <Route index element={<ProfileInfo />} />
+                        <Route path="orders" element={<OrdersHistory />} />
+                    </Route>
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             ) : (
                 <Loader size="medium" />

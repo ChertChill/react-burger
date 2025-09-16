@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { login } from '../../services/actions/auth-actions';
 import { clearAuthError } from '../../services/actions/auth-actions';
 import { getErrorText } from '../../utils/getErrorText';
+import { useForm } from '../../hooks';
 import ProtectedRoute from '../../components/protected-route/protected-route';
 import styles from './auth.module.css';
 
@@ -13,11 +14,9 @@ import styles from './auth.module.css';
  */
 export default function Login() {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { isAuthenticated, isLoading, error } = useSelector(state => state.auth);
+    const { isLoading, error } = useSelector(state => state.auth);
     
-    const [formData, setFormData] = useState({
+    const [formData, handleChange, setFormValues] = useForm({
         email: '',
         password: ''
     });
@@ -29,26 +28,6 @@ export default function Login() {
 
     // Сохраняем значения при ошибке для восстановления
     const [savedValues, setSavedValues] = useState(null);
-    
-    useEffect(() => {
-        if (error && savedValues) {
-            // Восстанавливаем значения при ошибке
-            setFormData(savedValues);
-            setSavedValues(null);
-        }
-    }, [error, savedValues]);
-
-    /**
-     * Обработчик изменения полей формы
-     * @param {Event} e - событие изменения
-     */
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
 
     /**
      * Обработчик отправки формы
@@ -62,24 +41,20 @@ export default function Login() {
         }
 
         // Сохраняем значения перед отправкой
-        setSavedValues({ ...formData });
+        const currentValues = { ...formData };
+        setSavedValues(currentValues);
 
         try {
             await dispatch(login(formData.email, formData.password));
             // После успешной авторизации пользователь будет перенаправлен через ProtectedRoute
         } catch (error) {
             console.error('Ошибка при авторизации:', error);
+            // Восстанавливаем значения при ошибке синхронно
+            setFormValues(currentValues);
+            setSavedValues(null);
         }
     };
 
-    // Эффект для переадресации после успешной авторизации
-    useEffect(() => {
-        if (isAuthenticated) {
-            // Получаем путь для возврата из state или используем главную страницу
-            const from = location.state?.from || '/';
-            navigate(from, { replace: true });
-        }
-    }, [isAuthenticated, navigate, location.state]);
 
     return (
         <ProtectedRoute requireGuest={true}>
@@ -106,6 +81,7 @@ export default function Login() {
                             error={!!error}
                             size="default"
                             disabled={isLoading}
+                            autoComplete="email"
                         />
                     </div>
                     
@@ -118,6 +94,7 @@ export default function Login() {
                             error={!!error}
                             size="default"
                             disabled={isLoading}
+                            autoComplete="current-password"
                         />
                     </div>
                     
