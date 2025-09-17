@@ -3,7 +3,10 @@ import {
   REMOVE_INGREDIENT_FROM_CONSTRUCTOR,
   SET_BUN,
   MOVE_INGREDIENT,
-  CLEAR_CONSTRUCTOR
+  CLEAR_CONSTRUCTOR,
+  SAVE_CONSTRUCTOR_STATE,
+  RESTORE_CONSTRUCTOR_STATE,
+  RESTORE_CONSTRUCTOR_WITHOUT_COUNTERS
 } from '../actions/action-types';
 
 /**
@@ -61,6 +64,21 @@ const constructorReducer = (state = initialState, action) => {
         ...state,
         constructorIngredients: [],
         bun: null
+      };
+
+    case SAVE_CONSTRUCTOR_STATE:
+      // Сохранение состояния обрабатывается в action creator
+      return state;
+
+    case RESTORE_CONSTRUCTOR_STATE:
+      // Восстановление состояния обрабатывается в action creator
+      return state;
+
+    case RESTORE_CONSTRUCTOR_WITHOUT_COUNTERS:
+      return {
+        ...state,
+        bun: action.payload.bun,
+        constructorIngredients: action.payload.constructorIngredients
       };
       
     default:

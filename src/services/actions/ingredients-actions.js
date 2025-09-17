@@ -6,7 +6,8 @@ import {
   SET_INGREDIENTS_LOADING, 
   SET_INGREDIENTS_ERROR,
   INCREMENT_INGREDIENT_COUNT,
-  DECREMENT_INGREDIENT_COUNT
+  DECREMENT_INGREDIENT_COUNT,
+  RESTORE_INGREDIENT_COUNTERS
 } from './action-types';
 import { request } from '../../utils/checkResponse';
 
@@ -91,6 +92,17 @@ export const decrementIngredientCountMultiple = (ingredientId, count = 1) => (di
     dispatch(decrementIngredientCount(ingredientId));
   }
 };
+
+/**
+ * Восстановление счетчиков ингредиентов из сохраненного состояния
+ * Используется при восстановлении состояния конструктора из localStorage
+ * @param {Object} ingredientCounters - объект с счетчиками ингредиентов {ingredientId: count}
+ * @returns {Object} action для восстановления счетчиков
+ */
+export const restoreIngredientCounters = (ingredientCounters) => ({
+  type: RESTORE_INGREDIENT_COUNTERS,
+  payload: ingredientCounters
+});
 
 /**
  * Асинхронный action creator для получения ингредиентов от API
