@@ -11,9 +11,13 @@ import reportWebVitals from './reportWebVitals';
  * Создание корневого элемента для рендеринга React приложения
  * Получает DOM элемент с id 'root' из HTML файла
  */
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const rootElement: HTMLElement | null = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+const root = ReactDOM.createRoot(rootElement);
 
 /**
  * Рендеринг основного компонента приложения
