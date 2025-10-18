@@ -7,12 +7,16 @@ import {
   SET_ORDER_ERROR,
   CLEAR_ORDER
 } from '../actions/action-types';
+import { 
+  IOrderState,
+  TOrderActions
+} from '../../utils/types';
 
 /**
  * Начальное состояние для reducer заказа
  * Содержит номер заказа, состояние загрузки и ошибки
  */
-const initialState = {
+const initialState: IOrderState = {
   orderNumber: null,
   loading: false,
   error: null
@@ -22,11 +26,11 @@ const initialState = {
  * Reducer для управления состоянием заказа
  * Обрабатывает создание заказа, управление состоянием загрузки и ошибками
  * 
- * @param {Object} state - текущее состояние
- * @param {Object} action - действие для обработки
- * @returns {Object} новое состояние
+ * @param state - текущее состояние
+ * @param action - действие для обработки
+ * @returns новое состояние
  */
-const orderReducer = (state = initialState, action) => {
+const orderReducer = (state: IOrderState = initialState, action: TOrderActions): IOrderState => {
   switch (action.type) {
     case CREATE_ORDER_REQUEST:
       return {

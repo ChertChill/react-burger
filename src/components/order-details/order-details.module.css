@@ -1,16 +1,89 @@
-.group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+.details {
+  margin-top: -44px;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
 }
 
-    .number p {
-        margin: 0;
-        text-shadow: 0px 4px 32px #3333FF80, 0px 0px 8px #3333FF40, 0px 0px 16px #3333FF40;
-    }
+.status_done {
+  color: #00CCCC;
+}
 
-    .icon {
-        width: 120px;
-        height: 120px;
-    }
+.status_pending {
+  color: #F2F2F3;
+}
+
+.status_created {
+  color: #F2F2F3;
+}
+
+.status_cancelled {
+  color: #E52B1A;
+}
+
+.ingredients_list {
+  max-height: 310px;
+  overflow-y: auto;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ingredient_item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ingredient_info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.ingredient_image_wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #801AB2, #4C4CFF);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.ingredient_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #1C1C21;
+}
+
+.ingredient_count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total_price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.not_found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}

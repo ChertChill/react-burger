@@ -27,15 +27,35 @@ import {
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR
 } from './action-types';
+import { 
+  IUserData,
+  TAuthActions,
+  IRegisterSuccessAction,
+  IRegisterErrorAction,
+  ILoginSuccessAction,
+  ILoginErrorAction,
+  ILogoutErrorAction,
+  IRefreshTokenSuccessAction,
+  IRefreshTokenErrorAction,
+  ISetUserDataAction,
+  ISetAuthLoadingAction,
+  ISetAuthErrorAction,
+  IGetUserSuccessAction,
+  IGetUserErrorAction,
+  IUpdateUserSuccessAction,
+  IUpdateUserErrorAction
+} from '../../utils/types';
+import { ThunkAction } from 'redux-thunk';
+import { IRootState } from '../../utils/types';
 
 /**
  * Экшены для регистрации пользователя
  */
-export const registerRequest = () => ({
+export const registerRequest = (): { type: typeof REGISTER_REQUEST } => ({
   type: REGISTER_REQUEST
 });
 
-export const registerSuccess = (user, accessToken, refreshToken) => ({
+export const registerSuccess = (user: IUserData, accessToken: string, refreshToken: string): IRegisterSuccessAction => ({
   type: REGISTER_SUCCESS,
   payload: {
     user,
@@ -44,19 +64,19 @@ export const registerSuccess = (user, accessToken, refreshToken) => ({
   }
 });
 
-export const registerError = (error) => ({
+export const registerError = (error: string): IRegisterErrorAction => ({
   type: REGISTER_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для регистрации пользователя
- * @param {string} email - Email пользователя
- * @param {string} password - Пароль
- * @param {string} name - Имя пользователя
- * @returns {Function} - Thunk функция
+ * @param email - Email пользователя
+ * @param password - Пароль
+ * @param name - Имя пользователя
+ * @returns Thunk функция
  */
-export const register = (email, password, name) => {
+export const register = (email: string, password: string, name: string): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(registerRequest());
     dispatch(setAuthLoading(true));
@@ -69,7 +89,7 @@ export const register = (email, password, name) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password, name }),
-      });
+      }) as unknown as { user: IUserData; accessToken: string; refreshToken: string };
 
       const { user, accessToken, refreshToken } = response;
       
@@ -80,8 +100,8 @@ export const register = (email, password, name) => {
       dispatch(setUserData(user));
       
     } catch (error) {
-      dispatch(registerError(error));
-      dispatch(setAuthError(error));
+      dispatch(registerError((error as Error).message));
+      dispatch(setAuthError((error as Error).message));
     } finally {
       dispatch(setAuthLoading(false));
     }
@@ -91,11 +111,11 @@ export const register = (email, password, name) => {
 /**
  * Экшены для авторизации пользователя
  */
-export const loginRequest = () => ({
+export const loginRequest = (): { type: typeof LOGIN_REQUEST } => ({
   type: LOGIN_REQUEST
 });
 
-export const loginSuccess = (user, accessToken, refreshToken) => ({
+export const loginSuccess = (user: IUserData, accessToken: string, refreshToken: string): ILoginSuccessAction => ({
   type: LOGIN_SUCCESS,
   payload: {
     user,
@@ -104,18 +124,18 @@ export const loginSuccess = (user, accessToken, refreshToken) => ({
   }
 });
 
-export const loginError = (error) => ({
+export const loginError = (error: string): ILoginErrorAction => ({
   type: LOGIN_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для авторизации пользователя
- * @param {string} email - Email пользователя
- * @param {string} password - Пароль
- * @returns {Function} - Thunk функция
+ * @param email - Email пользователя
+ * @param password - Пароль
+ * @returns Thunk функция
  */
-export const login = (email, password) => {
+export const login = (email: string, password: string): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(loginRequest());
     dispatch(setAuthLoading(true));
@@ -128,7 +148,7 @@ export const login = (email, password) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-      });
+      }) as unknown as { user: IUserData; accessToken: string; refreshToken: string };
 
       const { user, accessToken, refreshToken } = response;
       
@@ -139,8 +159,8 @@ export const login = (email, password) => {
       dispatch(setUserData(user));
       
     } catch (error) {
-      dispatch(loginError(error));
-      dispatch(setAuthError(error));
+      dispatch(loginError((error as Error).message));
+      dispatch(setAuthError((error as Error).message));
     } finally {
       dispatch(setAuthLoading(false));
     }
@@ -150,24 +170,24 @@ export const login = (email, password) => {
 /**
  * Экшены для выхода из системы
  */
-export const logoutRequest = () => ({
+export const logoutRequest = (): { type: typeof LOGOUT_REQUEST } => ({
   type: LOGOUT_REQUEST
 });
 
-export const logoutSuccess = () => ({
+export const logoutSuccess = (): { type: typeof LOGOUT_SUCCESS } => ({
   type: LOGOUT_SUCCESS
 });
 
-export const logoutError = (error) => ({
+export const logoutError = (error: string): ILogoutErrorAction => ({
   type: LOGOUT_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для выхода из системы
- * @returns {Function} - Thunk функция
+ * @returns Thunk функция
  */
-export const logout = () => {
+export const logout = (): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(logoutRequest());
     dispatch(setAuthLoading(true));
@@ -204,7 +224,7 @@ export const logout = () => {
       
       dispatch(logoutSuccess());
       dispatch(clearUserData());
-      dispatch(logoutError(error));
+      dispatch(logoutError((error as Error).message));
     } finally {
       dispatch(setAuthLoading(false));
     }
@@ -214,11 +234,11 @@ export const logout = () => {
 /**
  * Экшены для обновления токена
  */
-export const refreshTokenRequest = () => ({
+export const refreshTokenRequest = (): { type: typeof REFRESH_TOKEN_REQUEST } => ({
   type: REFRESH_TOKEN_REQUEST
 });
 
-export const refreshTokenSuccess = (accessToken, refreshToken) => ({
+export const refreshTokenSuccess = (accessToken: string, refreshToken: string): IRefreshTokenSuccessAction => ({
   type: REFRESH_TOKEN_SUCCESS,
   payload: {
     accessToken,
@@ -226,16 +246,16 @@ export const refreshTokenSuccess = (accessToken, refreshToken) => ({
   }
 });
 
-export const refreshTokenError = (error) => ({
+export const refreshTokenError = (error: string): IRefreshTokenErrorAction => ({
   type: REFRESH_TOKEN_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для обновления токена
- * @returns {Function} - Thunk функция
+ * @returns Thunk функция
  */
-export const refreshToken = () => {
+export const refreshToken = (): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(refreshTokenRequest());
     dispatch(setAuthLoading(true));
@@ -254,7 +274,7 @@ export const refreshToken = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token: refreshTokenValue }),
-      });
+      }) as unknown as { accessToken: string; refreshToken: string };
 
       const { accessToken, refreshToken: newRefreshToken } = response;
       
@@ -267,8 +287,8 @@ export const refreshToken = () => {
       // Если обновление токена не удалось, очищаем все данные
       authUtils.removeTokens();
       dispatch(clearUserData());
-      dispatch(refreshTokenError(error));
-      dispatch(setAuthError(error));
+      dispatch(refreshTokenError((error as Error).message));
+      dispatch(setAuthError((error as Error).message));
     } finally {
       dispatch(setAuthLoading(false));
     }
@@ -278,24 +298,24 @@ export const refreshToken = () => {
 /**
  * Экшены для управления данными пользователя
  */
-export const setUserData = (user) => ({
+export const setUserData = (user: IUserData): ISetUserDataAction => ({
   type: SET_USER_DATA,
   payload: user
 });
 
-export const clearUserData = () => ({
+export const clearUserData = (): { type: typeof CLEAR_USER_DATA } => ({
   type: CLEAR_USER_DATA
 });
 
 /**
  * Экшены для управления состоянием загрузки и ошибок
  */
-export const setAuthLoading = (loading) => ({
+export const setAuthLoading = (loading: boolean): ISetAuthLoadingAction => ({
   type: SET_AUTH_LOADING,
   payload: loading
 });
 
-export const setAuthError = (error) => ({
+export const setAuthError = (error: string | null): ISetAuthErrorAction => ({
   type: SET_AUTH_ERROR,
   payload: error
 });
@@ -303,25 +323,25 @@ export const setAuthError = (error) => ({
 /**
  * Экшены для получения данных пользователя
  */
-export const getUserRequest = () => ({
+export const getUserRequest = (): { type: typeof GET_USER_REQUEST } => ({
   type: GET_USER_REQUEST
 });
 
-export const getUserSuccess = (user) => ({
+export const getUserSuccess = (user: IUserData): IGetUserSuccessAction => ({
   type: GET_USER_SUCCESS,
   payload: user
 });
 
-export const getUserError = (error) => ({
+export const getUserError = (error: string): IGetUserErrorAction => ({
   type: GET_USER_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для получения данных пользователя
- * @returns {Function} - Thunk функция
+ * @returns Thunk функция
  */
-export const fetchUserData = () => {
+export const fetchUserData = (): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(getUserRequest());
     dispatch(setAuthLoading(true));
@@ -334,11 +354,11 @@ export const fetchUserData = () => {
       dispatch(setUserData(response.user));
       
     } catch (error) {
-      dispatch(getUserError(error));
-      dispatch(setAuthError(error));
+      dispatch(getUserError((error as Error).message));
+      dispatch(setAuthError((error as Error).message));
       
       // Если ошибка связана с токенами, очищаем данные авторизации
-      if (error.message?.includes('Token') || error.message?.includes('refresh')) {
+      if ((error as Error).message?.includes('Token') || (error as Error).message?.includes('refresh')) {
         authUtils.clearAllAuthData();
         dispatch(clearUserData());
       }
@@ -351,26 +371,26 @@ export const fetchUserData = () => {
 /**
  * Экшены для обновления данных пользователя
  */
-export const updateUserRequest = () => ({
+export const updateUserRequest = (): { type: typeof UPDATE_USER_REQUEST } => ({
   type: UPDATE_USER_REQUEST
 });
 
-export const updateUserSuccess = (user) => ({
+export const updateUserSuccess = (user: IUserData): IUpdateUserSuccessAction => ({
   type: UPDATE_USER_SUCCESS,
   payload: user
 });
 
-export const updateUserError = (error) => ({
+export const updateUserError = (error: string): IUpdateUserErrorAction => ({
   type: UPDATE_USER_ERROR,
   payload: error
 });
 
 /**
  * Асинхронный экшен для обновления данных пользователя
- * @param {Object} userData - Данные пользователя для обновления
- * @returns {Function} - Thunk функция
+ * @param userData - Данные пользователя для обновления
+ * @returns Thunk функция
  */
-export const updateUserProfile = (userData) => {
+export const updateUserProfile = (userData: Partial<IUserData>): ThunkAction<void, IRootState, unknown, TAuthActions> => {
   return async (dispatch) => {
     dispatch(updateUserRequest());
     dispatch(setAuthLoading(true));
@@ -383,11 +403,11 @@ export const updateUserProfile = (userData) => {
       dispatch(setUserData(response.user));
       
     } catch (error) {
-      dispatch(updateUserError(error));
-      dispatch(setAuthError(error));
+      dispatch(updateUserError((error as Error).message));
+      dispatch(setAuthError((error as Error).message));
       
       // Если ошибка связана с токенами, очищаем данные авторизации
-      if (error.message?.includes('Token') || error.message?.includes('refresh')) {
+      if ((error as Error).message?.includes('Token') || (error as Error).message?.includes('refresh')) {
         authUtils.clearAllAuthData();
         dispatch(clearUserData());
       }
@@ -399,8 +419,8 @@ export const updateUserProfile = (userData) => {
 
 /**
  * Экшен для очистки ошибки аутентификации
- * @returns {Object} - Action объект
+ * @returns Action объект
  */
-export const clearAuthError = () => ({
+export const clearAuthError = (): { type: typeof CLEAR_AUTH_ERROR } => ({
   type: CLEAR_AUTH_ERROR
 });

@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useDrop } from 'react-dnd';
 import styles from './burger-constructor.module.css';
 import { ConstructorElement, Button, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import Modal from '../modal/modal';
-import OrderDetails from '../order-details/order-details';
-import { useModal } from '../../hooks';
+import OrderConfirm from '../order-confirm/order-confirm';
+import { useModal, useTypedSelector, useTypedDispatch } from '../../hooks';
 import { createOrder, clearOrder, addIngredientToConstructor, setBun, removeIngredientFromConstructor, clearConstructor, saveConstructorState, restoreConstructorState } from '../../services/actions';
 import DraggableConstructorItem from './draggable-constructor-item';
-import { IRootState, IDragItem } from '../../utils/types';
+import { IDragItem } from '../../utils/types';
 
 /**
  * Компонент конструктора бургеров
@@ -17,12 +16,12 @@ import { IRootState, IDragItem } from '../../utils/types';
  * позволяет оформить заказ и показывает итоговую стоимость
  */
 export default function BurgerConstructor(): React.JSX.Element {
-    const dispatch = useDispatch();
+    const dispatch = useTypedDispatch();
     const navigate = useNavigate();
 
-    const { bun, constructorIngredients } = useSelector((state: IRootState) => state.constructor);
-    const { loading: orderLoading, error: orderError, orderNumber } = useSelector((state: IRootState) => state.order);
-    const { isAuthenticated } = useSelector((state: IRootState) => state.auth);
+    const { bun, constructorIngredients } = useTypedSelector((state) => state.constructor);
+    const { loading: orderLoading, error: orderError, orderNumber } = useTypedSelector((state) => state.order);
+    const { isAuthenticated } = useTypedSelector((state) => state.auth);
     const [hasOverflow, setHasOverflow] = useState<boolean>(false);      // Состояние для отслеживания переполнения контейнера с ингредиентами
     const [orderTimer, setOrderTimer] = useState<number>(0);            // Счетчик времени создания заказа
     const { isModalOpen, openModal, closeModal } = useModal();  // Кастомный хук для управления модальным окном
@@ -346,7 +345,7 @@ export default function BurgerConstructor(): React.JSX.Element {
 
             {isModalOpen && (
                 <Modal title="" handleClose={handleCloseModal}>
-                    <OrderDetails />
+                    <OrderConfirm />
                 </Modal>
             )}
 

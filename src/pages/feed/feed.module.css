@@ -1,0 +1,19 @@
+.container {
+  grid-column: 1 / -1;
+
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 20px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1.04fr 1fr;
+  gap: 56px;
+
+  width: 100%;
+}
+
+.feed_column, .stats_column {
+  max-height: calc(100vh - 280px);
+}

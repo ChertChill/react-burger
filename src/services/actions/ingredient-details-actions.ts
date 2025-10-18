@@ -2,6 +2,10 @@ import {
   SET_CURRENT_INGREDIENT,
   CLEAR_CURRENT_INGREDIENT
 } from './action-types';
+import { 
+  IIngredient,
+  ISetCurrentIngredientAction
+} from '../../utils/types';
 
 /**
  * Action creators для управления деталями ингредиента
@@ -10,10 +14,10 @@ import {
 /**
  * Установка текущего просматриваемого ингредиента
  * Используется для отображения модального окна с деталями
- * @param {Object} ingredient - объект ингредиента для отображения
- * @returns {Object} action для установки текущего ингредиента
+ * @param ingredient - объект ингредиента для отображения
+ * @returns action для установки текущего ингредиента
  */
-export const setCurrentIngredient = (ingredient) => ({
+export const setCurrentIngredient = (ingredient: IIngredient): ISetCurrentIngredientAction => ({
   type: SET_CURRENT_INGREDIENT,
   payload: ingredient
 });
@@ -21,8 +25,8 @@ export const setCurrentIngredient = (ingredient) => ({
 /**
  * Очистка данных о текущем ингредиенте
  * Вызывается при закрытии модального окна с деталями
- * @returns {Object} action для очистки текущего ингредиента
+ * @returns action для очистки текущего ингредиента
  */
-export const clearCurrentIngredient = () => ({
+export const clearCurrentIngredient = (): { type: typeof CLEAR_CURRENT_INGREDIENT } => ({
   type: CLEAR_CURRENT_INGREDIENT
 });
