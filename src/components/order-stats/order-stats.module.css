@@ -1,0 +1,54 @@
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px 36px;
+}
+
+.ready,
+.in_progress,
+.total,
+.today {
+  display: flex;
+  flex-direction: column;
+}
+
+.total, .today {
+  grid-column: 1 / 3;
+}
+
+.columns {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.numbers {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+  min-width: 60px;
+  
+  /* max-height: 312px;
+  overflow-y: auto; */
+}
+
+.number_ready {
+  color: #00CCCC;
+}
+
+.more_container {
+  margin-top: 8px;
+}
+
+.number_more {
+  color: #8585AD;
+}
+
+.total_number {
+  color: #F2F2F3;
+  text-shadow:
+    0px 4px 32px #3333ff80,
+    0px 0px 8px #3333ff40,
+    0px 0px 16px #3333ff40;
+}
+

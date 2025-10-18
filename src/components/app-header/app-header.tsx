@@ -77,13 +77,13 @@ export default function AppHeader(): React.JSX.Element {
 
                     {/* Ссылка на ленту заказов */}
                     <Link 
-                        to="/orders"
+                        to="/feed"
                         className={`${styles.nav__item} pt-4 pr-5 pb-4 pl-5`} 
-                        onMouseEnter={() => toggleHovered('/orders')}
+                        onMouseEnter={() => toggleHovered('/feed')}
                         onMouseLeave={() => toggleHovered(null)}
                     >
-                        <ListIcon type={isItemActive('/orders') ? 'primary' : 'secondary'} />
-                        <p className={`text text_type_main-default ml-2 ${isItemActive('/orders') ? '' : 'text_color_inactive'}`}>
+                        <ListIcon type={isItemActive('/feed') ? 'primary' : 'secondary'} />
+                        <p className={`text text_type_main-default ml-2 ${isItemActive('/feed') ? '' : 'text_color_inactive'}`}>
                             Лента заказов
                         </p>
                     </Link>

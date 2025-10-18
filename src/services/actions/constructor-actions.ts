@@ -14,6 +14,19 @@ import {
   restoreIngredientCounters
 } from './ingredients-actions';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  IIngredient, 
+  IConstructorIngredient,
+  TConstructorActions,
+  TIngredientsActions,
+  IAddIngredientToConstructorAction,
+  IRemoveIngredientFromConstructorAction,
+  ISetBunAction,
+  IMoveIngredientAction,
+  IRestoreConstructorWithoutCountersAction
+} from '../../utils/types';
+import { ThunkAction } from 'redux-thunk';
+import { IRootState } from '../../utils/types';
 
 /**
  * Action creators для управления конструктором бургера
@@ -22,42 +35,47 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * Добавление ингредиента в конструктор
  * Создает уникальный ID для ингредиента и увеличивает его счетчик
- * @param {Object} ingredient - объект ингредиента для добавления
- * @returns {Function} thunk функция для добавления ингредиента
+ * @param ingredient - объект ингредиента для добавления
+ * @returns thunk функция для добавления ингредиента
  */
-export const addIngredientToConstructor = (ingredient) => (dispatch) => {
+export const addIngredientToConstructor = (ingredient: IIngredient): ThunkAction<void, IRootState, unknown, TConstructorActions | TIngredientsActions> => (dispatch) => {
+  const constructorIngredient: IConstructorIngredient = {
+    ...ingredient,
+    id: uuidv4()    // Уникальный ID для каждого ингредиента
+  };
+
   dispatch({
     type: ADD_INGREDIENT_TO_CONSTRUCTOR,
-    payload: {
-      ...ingredient,
-      id: uuidv4()    // Уникальный ID для каждого ингредиента
-    }
-  });
+    payload: constructorIngredient
+  } as IAddIngredientToConstructorAction);
   dispatch(incrementIngredientCount(ingredient._id));
 };
 
 /**
  * Удаление ингредиента из конструктора
  * Удаляет ингредиент по индексу и уменьшает его счетчик
- * @param {number} index - индекс ингредиента в конструкторе
- * @param {string} ingredientId - идентификатор ингредиента
- * @returns {Function} thunk функция для удаления ингредиента
+ * @param index - индекс ингредиента в конструкторе
+ * @param ingredientId - идентификатор ингредиента
+ * @returns thunk функция для удаления ингредиента
  */
-export const removeIngredientFromConstructor = (index, ingredientId) => (dispatch) => {
+export const removeIngredientFromConstructor = (
+  index: number, 
+  ingredientId: string
+): ThunkAction<void, IRootState, unknown, TConstructorActions | TIngredientsActions> => (dispatch) => {
   dispatch({
     type: REMOVE_INGREDIENT_FROM_CONSTRUCTOR,
     payload: { index, ingredientId }
-  });
+  } as IRemoveIngredientFromConstructorAction);
   dispatch(decrementIngredientCount(ingredientId));
 };
 
 /**
  * Установка булки в конструктор
  * Управляет счетчиками булок (учитывается дважды - верх и низ)
- * @param {Object} bun - объект булки для установки
- * @returns {Function} thunk функция для установки булки
+ * @param bun - объект булки для установки
+ * @returns thunk функция для установки булки
  */
-export const setBun = (bun) => (dispatch, getState) => {
+export const setBun = (bun: IIngredient): ThunkAction<void, IRootState, unknown, TConstructorActions | TIngredientsActions> => (dispatch, getState) => {
   const state = getState();
   const currentBun = state.constructor.bun;
   
@@ -72,17 +90,17 @@ export const setBun = (bun) => (dispatch, getState) => {
   dispatch({
     type: SET_BUN,
     payload: bun
-  });
+  } as ISetBunAction);
 };
 
 /**
  * Перемещение ингредиента в конструкторе
  * Используется для drag & drop функциональности
- * @param {number} dragIndex - индекс перетаскиваемого элемента
- * @param {number} hoverIndex - индекс элемента, на который наведен курсор
- * @returns {Object} action для перемещения ингредиента
+ * @param dragIndex - индекс перетаскиваемого элемента
+ * @param hoverIndex - индекс элемента, на который наведен курсор
+ * @returns action для перемещения ингредиента
  */
-export const moveIngredient = (dragIndex, hoverIndex) => ({
+export const moveIngredient = (dragIndex: number, hoverIndex: number): IMoveIngredientAction => ({
   type: MOVE_INGREDIENT,
   payload: { dragIndex, hoverIndex }
 });
@@ -90,10 +108,10 @@ export const moveIngredient = (dragIndex, hoverIndex) => ({
 /**
  * Очистка конструктора
  * Удаляет все ингредиенты и сбрасывает счетчики
- * @param {boolean} clearStorage - нужно ли очистить localStorage (по умолчанию false)
- * @returns {Function} thunk функция для очистки конструктора
+ * @param clearStorage - нужно ли очистить localStorage (по умолчанию false)
+ * @returns thunk функция для очистки конструктора
  */
-export const clearConstructor = (clearStorage = false) => (dispatch, getState) => {
+export const clearConstructor = (clearStorage: boolean = false): ThunkAction<void, IRootState, unknown, TConstructorActions | TIngredientsActions> => (dispatch, getState) => {
   const state = getState();
   const { bun, constructorIngredients } = state.constructor;
   
@@ -123,17 +141,17 @@ export const clearConstructor = (clearStorage = false) => (dispatch, getState) =
 /**
  * Сохранение состояния конструктора в localStorage
  * Сохраняет состояние только для авторизованных пользователей
- * @param {boolean} isAuthenticated - статус авторизации пользователя
- * @returns {Function} thunk функция для сохранения состояния
+ * @param isAuthenticated - статус авторизации пользователя
+ * @returns thunk функция для сохранения состояния
  */
-export const saveConstructorState = (isAuthenticated) => (dispatch, getState) => {
+export const saveConstructorState = (isAuthenticated: boolean): ThunkAction<void, IRootState, unknown, TConstructorActions> => (dispatch, getState) => {
   if (isAuthenticated) {
     const state = getState();
     const { bun, constructorIngredients } = state.constructor;
     const { ingredients } = state.ingredients;
     
     // Создаем карту счетчиков ингредиентов
-    const ingredientCounters = {};
+    const ingredientCounters: Record<string, number> = {};
     if (ingredients && Array.isArray(ingredients)) {
       ingredients.forEach(ingredient => {
         if (ingredient.count && ingredient.count > 0) {
@@ -156,11 +174,14 @@ export const saveConstructorState = (isAuthenticated) => (dispatch, getState) =>
 /**
  * Восстановление конструктора без изменения счетчиков ингредиентов
  * Используется при восстановлении состояния из localStorage
- * @param {Object} bun - объект булки
- * @param {Array} constructorIngredients - массив ингредиентов конструктора
- * @returns {Object} action для восстановления конструктора
+ * @param bun - объект булки
+ * @param constructorIngredients - массив ингредиентов конструктора
+ * @returns action для восстановления конструктора
  */
-export const restoreConstructorWithoutCounters = (bun, constructorIngredients) => ({
+export const restoreConstructorWithoutCounters = (
+  bun: IIngredient | null, 
+  constructorIngredients: IConstructorIngredient[]
+): IRestoreConstructorWithoutCountersAction => ({
   type: RESTORE_CONSTRUCTOR_WITHOUT_COUNTERS,
   payload: {
     bun,
@@ -171,10 +192,10 @@ export const restoreConstructorWithoutCounters = (bun, constructorIngredients) =
 /**
  * Восстановление состояния конструктора из localStorage
  * Восстанавливает состояние только для авторизованных пользователей
- * @param {boolean} isAuthenticated - статус авторизации пользователя
- * @returns {Function} thunk функция для восстановления состояния
+ * @param isAuthenticated - статус авторизации пользователя
+ * @returns thunk функция для восстановления состояния
  */
-export const restoreConstructorState = (isAuthenticated) => (dispatch, getState) => {
+export const restoreConstructorState = (isAuthenticated: boolean): ThunkAction<void, IRootState, unknown, TConstructorActions | TIngredientsActions> => (dispatch, getState) => {
   if (isAuthenticated) {
     try {
       const savedState = localStorage.getItem('constructorState');

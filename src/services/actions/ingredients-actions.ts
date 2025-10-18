@@ -10,6 +10,18 @@ import {
   RESTORE_INGREDIENT_COUNTERS
 } from './action-types';
 import { request } from '../../utils/checkResponse';
+import { 
+  IIngredient, 
+  TIngredientsActions,
+  ISetIngredientsAction,
+  ISetIngredientsLoadingAction,
+  ISetIngredientsErrorAction,
+  IIncrementIngredientCountAction,
+  IDecrementIngredientCountAction,
+  IRestoreIngredientCountersAction
+} from '../../utils/types';
+import { ThunkAction } from 'redux-thunk';
+import { IRootState } from '../../utils/types';
 
 /**
  * Синхронные action creators для управления ингредиентами
@@ -17,30 +29,30 @@ import { request } from '../../utils/checkResponse';
 
 /**
  * Установка списка ингредиентов в store
- * @param {Array} ingredients - массив ингредиентов
- * @returns {Object} action для установки ингредиентов
+ * @param ingredients - массив ингредиентов
+ * @returns action для установки ингредиентов
  */
-export const setIngredients = (ingredients) => ({
+export const setIngredients = (ingredients: IIngredient[]): ISetIngredientsAction => ({
   type: SET_INGREDIENTS,
   payload: ingredients
 });
 
 /**
  * Установка состояния загрузки ингредиентов
- * @param {boolean} loading - состояние загрузки
- * @returns {Object} action для установки состояния загрузки
+ * @param loading - состояние загрузки
+ * @returns action для установки состояния загрузки
  */
-export const setIngredientsLoading = (loading) => ({
+export const setIngredientsLoading = (loading: boolean): ISetIngredientsLoadingAction => ({
   type: SET_INGREDIENTS_LOADING,
   payload: loading
 });
 
 /**
  * Установка ошибки при загрузке ингредиентов
- * @param {string} error - сообщение об ошибке
- * @returns {Object} action для установки ошибки
+ * @param error - сообщение об ошибке
+ * @returns action для установки ошибки
  */
-export const setIngredientsError = (error) => ({
+export const setIngredientsError = (error: string): ISetIngredientsErrorAction => ({
   type: SET_INGREDIENTS_ERROR,
   payload: error
 });
@@ -48,10 +60,10 @@ export const setIngredientsError = (error) => ({
 /**
  * Увеличение счетчика ингредиента
  * Используется при добавлении ингредиента в конструктор
- * @param {string} ingredientId - идентификатор ингредиента
- * @returns {Object} action для увеличения счетчика
+ * @param ingredientId - идентификатор ингредиента
+ * @returns action для увеличения счетчика
  */
-export const incrementIngredientCount = (ingredientId) => ({
+export const incrementIngredientCount = (ingredientId: string): IIncrementIngredientCountAction => ({
   type: INCREMENT_INGREDIENT_COUNT,
   payload: ingredientId
 });
@@ -59,11 +71,14 @@ export const incrementIngredientCount = (ingredientId) => ({
 /**
  * Увеличение счетчика ингредиента на указанное количество раз
  * Используется для булок, которые учитываются дважды (верх и низ)
- * @param {string} ingredientId - идентификатор ингредиента
- * @param {number} count - количество увеличений (по умолчанию 1)
- * @returns {Function} thunk функция для множественного увеличения счетчика
+ * @param ingredientId - идентификатор ингредиента
+ * @param count - количество увеличений (по умолчанию 1)
+ * @returns thunk функция для множественного увеличения счетчика
  */
-export const incrementIngredientCountMultiple = (ingredientId, count = 1) => (dispatch) => {
+export const incrementIngredientCountMultiple = (
+  ingredientId: string, 
+  count: number = 1
+): ThunkAction<void, IRootState, unknown, TIngredientsActions> => (dispatch) => {
   for (let i = 0; i < count; i++) {
     dispatch(incrementIngredientCount(ingredientId));
   }
@@ -72,10 +87,10 @@ export const incrementIngredientCountMultiple = (ingredientId, count = 1) => (di
 /**
  * Уменьшение счетчика ингредиента
  * Используется при удалении ингредиента из конструктора
- * @param {string} ingredientId - идентификатор ингредиента
- * @returns {Object} action для уменьшения счетчика
+ * @param ingredientId - идентификатор ингредиента
+ * @returns action для уменьшения счетчика
  */
-export const decrementIngredientCount = (ingredientId) => ({
+export const decrementIngredientCount = (ingredientId: string): IDecrementIngredientCountAction => ({
   type: DECREMENT_INGREDIENT_COUNT,
   payload: ingredientId
 });
@@ -83,11 +98,14 @@ export const decrementIngredientCount = (ingredientId) => ({
 /**
  * Уменьшение счетчика ингредиента на указанное количество раз
  * Используется для булок, которые учитываются дважды (верх и низ)
- * @param {string} ingredientId - идентификатор ингредиента
- * @param {number} count - количество уменьшений (по умолчанию 1)
- * @returns {Function} thunk функция для множественного уменьшения счетчика
+ * @param ingredientId - идентификатор ингредиента
+ * @param count - количество уменьшений (по умолчанию 1)
+ * @returns thunk функция для множественного уменьшения счетчика
  */
-export const decrementIngredientCountMultiple = (ingredientId, count = 1) => (dispatch) => {
+export const decrementIngredientCountMultiple = (
+  ingredientId: string, 
+  count: number = 1
+): ThunkAction<void, IRootState, unknown, TIngredientsActions> => (dispatch) => {
   for (let i = 0; i < count; i++) {
     dispatch(decrementIngredientCount(ingredientId));
   }
@@ -96,10 +114,10 @@ export const decrementIngredientCountMultiple = (ingredientId, count = 1) => (di
 /**
  * Восстановление счетчиков ингредиентов из сохраненного состояния
  * Используется при восстановлении состояния конструктора из localStorage
- * @param {Object} ingredientCounters - объект с счетчиками ингредиентов {ingredientId: count}
- * @returns {Object} action для восстановления счетчиков
+ * @param ingredientCounters - объект с счетчиками ингредиентов {ingredientId: count}
+ * @returns action для восстановления счетчиков
  */
-export const restoreIngredientCounters = (ingredientCounters) => ({
+export const restoreIngredientCounters = (ingredientCounters: Record<string, number>): IRestoreIngredientCountersAction => ({
   type: RESTORE_INGREDIENT_COUNTERS,
   payload: ingredientCounters
 });
@@ -108,9 +126,9 @@ export const restoreIngredientCounters = (ingredientCounters) => ({
  * Асинхронный action creator для получения ингредиентов от API
  * Загружает данные об ингредиентах с сервера и обновляет store
  * Включает проверку на уже загруженные данные для предотвращения повторных запросов
- * @returns {Function} thunk функция для асинхронной загрузки
+ * @returns thunk функция для асинхронной загрузки
  */
-export const fetchIngredients = () => {
+export const fetchIngredients = (): ThunkAction<void, IRootState, unknown, TIngredientsActions> => {
   return async (dispatch, getState) => {
     // Проверяем, не загружаются ли уже ингредиенты
     const { loading, ingredients } = getState().ingredients;
@@ -123,11 +141,11 @@ export const fetchIngredients = () => {
     try {
       dispatch({ type: FETCH_INGREDIENTS_REQUEST });
       
-      const data = await request('ingredients');
+      const data = await request('ingredients', { method: 'GET' }) as unknown as { data: IIngredient[] };
       
       dispatch({ type: FETCH_INGREDIENTS_SUCCESS, payload: data.data });
     } catch (error) {
-      dispatch({ type: FETCH_INGREDIENTS_ERROR, payload: error.message });
+      dispatch({ type: FETCH_INGREDIENTS_ERROR, payload: (error as Error).message });
     }
   };
 };
