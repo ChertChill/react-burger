@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import styles from './app.module.css';
 import Loader from '../loader/loader';
 import AppHeader from '../app-header/app-header';
@@ -17,6 +17,8 @@ import Feed from '../../pages/feed/feed';
 import OrderDetailsPage from '../../pages/order-details-page/order-details-page';
 import OrderFeed from '../order-feed/order-feed';
 import ProtectedRoute from '../protected-route/protected-route';
+import Modal from '../modal/modal';
+import OrderDetails from '../order-details/order-details';
 import { fetchIngredients } from '../../services/actions';
 import { fetchUserData } from '../../services/actions/auth-actions';
 import { authUtils } from '../../utils/tokenUtils';
@@ -29,10 +31,14 @@ import { useTypedSelector, useTypedDispatch } from '../../hooks';
  */
 export default function App(): React.JSX.Element {
     const dispatch = useTypedDispatch();
+    const location = useLocation();
     
     const { ingredients, loading, error } = useTypedSelector((state) => state.ingredients);
     const { isAuthenticated } = useTypedSelector((state) => state.auth);
     const [isMobile, setIsMobile] = useState<boolean>(false);                // Состояние для определения мобильного устройства
+
+    // Определяем background location для модальных окон
+    const background = location.state && (location.state as any).background;
 
     // Эффект для определения мобильного устройства
     useEffect(() => {
@@ -88,30 +94,56 @@ export default function App(): React.JSX.Element {
 
             {/* Основной контент приложения */}
             {!loading && !error && ingredients && ingredients.length > 0 ? (
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/" element={<Home />} />
-                    <Route path="/ingredients/:id" element={<IngredientDetailsPage />} />
-                    <Route path="/feed" element={<Feed />} />
-                    <Route path="/feed/:number" element={<OrderDetailsPage />} />
-                    <Route path="/profile/orders/:number" element={
-                        <ProtectedRoute requireAuth={true}>
-                            <OrderDetailsPage />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/profile" element={
-                        <ProtectedRoute requireAuth={true}>
-                            <Profile />
-                        </ProtectedRoute>
-                    }>
-                        <Route index element={<ProfileInfo />} />
-                        <Route path="orders" element={<OrderFeed showStatus={true} />} />
-                    </Route>
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
+                <>
+                    <Routes location={background || location}>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="/ingredients/:id" element={<IngredientDetailsPage />} />
+                        <Route path="/feed" element={<Feed />} />
+                        <Route path="/feed/:number" element={<OrderDetailsPage />} />
+                        <Route path="/profile/orders/:number" element={
+                            <ProtectedRoute requireAuth={true}>
+                                <OrderDetailsPage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/profile" element={
+                            <ProtectedRoute requireAuth={true}>
+                                <Profile />
+                            </ProtectedRoute>
+                        }>
+                            <Route index element={<ProfileInfo />} />
+                            <Route path="orders" element={<OrderFeed showStatus={true} />} />
+                        </Route>
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+
+                    {/* Модальные окна для деталей заказов */}
+                    {background && (
+                        <Routes>
+                            <Route 
+                                path="/feed/:number" 
+                                element={
+                                    <Modal handleClose={() => window.history.back()}>
+                                        <OrderDetails />
+                                    </Modal>
+                                } 
+                            />
+                            <Route 
+                                path="/profile/orders/:number" 
+                                element={
+                                    <ProtectedRoute requireAuth={true}>
+                                        <Modal handleClose={() => window.history.back()}>
+                                            <OrderDetails />
+                                        </Modal>
+                                    </ProtectedRoute>
+                                } 
+                            />
+                        </Routes>
+                    )}
+                </>
             ) : (
                 <Loader size="medium" />
             )}

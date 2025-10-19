@@ -63,12 +63,12 @@ export default function OrderCard({ order, ingredients, showStatus = false }: IO
     return `/feed/${order.number}`;
   };
 
-  // Определяем состояние для передачи в маршрут
+  // Определяем состояние для передачи в маршрут согласно паттерну React Router
   const getOrderState = () => {
     if (location.pathname.startsWith('/profile/orders')) {
-      return { from: 'profile' };
+      return { background: location };
     }
-    return { from: 'feed' };
+    return { background: location };
   };
 
   return (

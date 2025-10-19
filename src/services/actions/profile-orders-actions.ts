@@ -11,6 +11,7 @@ import {
 import { IRootState, TAllActions, IOrder, TWebSocketStatus } from '../../utils/types';
 import { tokenUtils } from '../../utils/tokenUtils';
 import { parseWebSocketMessage, createWebSocketConnection } from '../middleware/websocket-middleware';
+import { API_BASE_URL, WS_BASE_URL } from '../../utils/constants';
 
 /**
  * Action creators для истории заказов пользователя
@@ -81,7 +82,7 @@ export const connectProfileOrdersWebSocket = (): ThunkAction<void, IRootState, u
     dispatch(setProfileOrdersWebSocketError(null));
     dispatch(fetchProfileOrdersRequest()); // Устанавливаем состояние загрузки
 
-    const wsUrl = `wss://norma.nomoreparties.space/orders?token=${accessToken}`;
+    const wsUrl = `${WS_BASE_URL}/orders?token=${accessToken}`;
     
     // Создаем WebSocket соединение с помощью универсального middleware
     const wsConnection = createWebSocketConnection(
@@ -156,7 +157,7 @@ export const loadProfileOrdersDataViaHTTP = (): ThunkAction<void, IRootState, un
       }
       
       // Пытаемся загрузить данные через HTTP API
-      const response = await fetch('https://norma.nomoreparties.space/api/orders', {
+      const response = await fetch(`${API_BASE_URL}orders`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
@@ -211,7 +212,7 @@ export const fetchProfileOrderById = (orderNumber: number): ThunkAction<void, IR
         return;
       }
 
-      const response = await fetch(`https://norma.nomoreparties.space/api/orders/${orderNumber}`, {
+      const response = await fetch(`${API_BASE_URL}orders/${orderNumber}`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'

@@ -1,6 +1,7 @@
 import { Middleware } from 'redux';
 import { IRootState, TWebSocketStatus } from '../../utils/types';
 import { tokenUtils, refreshTokenUtils } from '../../utils/tokenUtils';
+import { API_BASE_URL } from '../../utils/constants';
 
 /**
  * Интерфейс для WebSocket соединения
@@ -319,7 +320,7 @@ const handleTokenRefresh = async (store: any) => {
       return;
     }
     
-    const response = await fetch('https://norma.nomoreparties.space/api/auth/token', {
+    const response = await fetch(`${API_BASE_URL}auth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -11,6 +11,7 @@ import {
 } from './action-types';
 import { IRootState, TAllActions, IOrder, TWebSocketStatus } from '../../utils/types';
 import { parseWebSocketMessage, createWebSocketConnection } from '../middleware/websocket-middleware';
+import { API_BASE_URL, WS_BASE_URL } from '../../utils/constants';
 
 /**
  * Action creators для ленты заказов
@@ -80,7 +81,7 @@ export const connectFeedWebSocket = (): ThunkAction<void, IRootState, unknown, T
     dispatch(setFeedWebSocketError(null));
     dispatch(fetchFeedRequest()); // Устанавливаем состояние загрузки
 
-    const wsUrl = 'wss://norma.nomoreparties.space/orders/all';
+    const wsUrl = `${WS_BASE_URL}/orders/all`;
     
     // Создаем WebSocket соединение с помощью универсального middleware
     const wsConnection = createWebSocketConnection(
@@ -168,7 +169,7 @@ export const loadFeedDataViaHTTP = (): ThunkAction<void, IRootState, unknown, TA
       console.log('Загружаем данные ленты заказов через HTTP...');
       
       // Пытаемся загрузить данные через HTTP API
-      const response = await fetch('https://norma.nomoreparties.space/api/orders/all');
+      const response = await fetch(`${API_BASE_URL}orders/all`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -235,7 +236,7 @@ export const loadFeedDataViaHTTP = (): ThunkAction<void, IRootState, unknown, TA
 export const fetchOrderById = (orderNumber: number): ThunkAction<void, IRootState, unknown, TAllActions> => {
   return async (dispatch) => {
     try {
-      const response = await fetch(`https://norma.nomoreparties.space/api/orders/${orderNumber}`);
+      const response = await fetch(`${API_BASE_URL}orders/${orderNumber}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
