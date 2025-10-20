@@ -8,12 +8,16 @@ import {
   RESTORE_CONSTRUCTOR_STATE,
   RESTORE_CONSTRUCTOR_WITHOUT_COUNTERS
 } from '../actions/action-types';
+import { 
+  IConstructorState,
+  TConstructorActions
+} from '../../utils/types';
 
 /**
  * Начальное состояние для reducer конструктора
  * Содержит массив ингредиентов конструктора и выбранную булку
  */
-const initialState = {
+const initialState: IConstructorState = {
   constructorIngredients: [],
   bun: null
 };
@@ -22,11 +26,11 @@ const initialState = {
  * Reducer для управления состоянием конструктора бургера
  * Обрабатывает добавление/удаление ингредиентов, установку булки и перемещение элементов
  * 
- * @param {Object} state - текущее состояние
- * @param {Object} action - действие для обработки
- * @returns {Object} новое состояние
+ * @param state - текущее состояние
+ * @param action - действие для обработки
+ * @returns новое состояние
  */
-const constructorReducer = (state = initialState, action) => {
+const constructorReducer = (state: IConstructorState = initialState, action: TConstructorActions): IConstructorState => {
   switch (action.type) {
     case ADD_INGREDIENT_TO_CONSTRUCTOR:
       return {

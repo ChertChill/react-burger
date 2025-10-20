@@ -24,6 +24,7 @@
     }
 
         .button__close {
+            z-index: 1;
             border: 0;
             background: none;
             cursor: pointer;

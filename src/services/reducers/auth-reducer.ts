@@ -23,11 +23,15 @@ import {
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR
 } from '../actions/action-types';
+import { 
+  IAuthState,
+  TAuthActions
+} from '../../utils/types';
 
 /**
  * Начальное состояние для аутентификации пользователя
  */
-const initialState = {
+const initialState: IAuthState = {
   // Данные пользователя
   user: null,
   
@@ -63,11 +67,11 @@ const initialState = {
 
 /**
  * Редьюсер для управления состоянием аутентификации
- * @param {Object} state - Текущее состояние
- * @param {Object} action - Экшен
- * @returns {Object} - Новое состояние
+ * @param state - Текущее состояние
+ * @param action - Экшен
+ * @returns - Новое состояние
  */
-const authReducer = (state = initialState, action) => {
+const authReducer = (state: IAuthState = initialState, action: TAuthActions): IAuthState => {
   switch (action.type) {
     // Регистрация
     case REGISTER_REQUEST:

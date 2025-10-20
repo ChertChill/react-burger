@@ -24,6 +24,10 @@ const ProfileNavigation: React.FC = () => {
      * @returns активна ли ссылка
      */
     const isLinkActive: TIsLinkActiveFunction = (path: string): boolean => {
+        if (path === '/profile/orders') {
+            // Для истории заказов считаем активной как /profile/orders, так и /profile/orders/:number
+            return location.pathname === '/profile/orders' || location.pathname.startsWith('/profile/orders/');
+        }
         return location.pathname === path;
     }
 
@@ -54,7 +58,7 @@ const ProfileNavigation: React.FC = () => {
     };
 
     return (
-        <div className={styles.navigationContainer}>
+        <div className={`${styles.navigationContainer} mt-20`}>
             <nav className={styles.navigation}>
                 <Link 
                     to="/profile" 

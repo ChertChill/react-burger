@@ -266,10 +266,92 @@ export interface IDropResult {
 // ЗАКАЗЫ
 // ============================================================================
 
+/**
+ * Типы для заказов
+ */
+
+/** Статус заказа */
+export type TOrderStatus = 'created' | 'pending' | 'done' | 'cancelled';
+
+/** Статус WebSocket соединения */
+export type TWebSocketStatus = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED';
+
+/** Состояние WebSocket соединения */
+export interface IWebSocketState {
+  status: TWebSocketStatus;
+  error: string | null;
+  reconnectAttempts: number;
+  maxReconnectAttempts: number;
+}
+
+/** Ингредиент в заказе */
+export interface IOrderIngredient {
+  _id: string;
+  name: string;
+  type: TIngredientType;
+  proteins: number;
+  fat: number;
+  carbohydrates: number;
+  calories: number;
+  price: number;
+  image: string;
+  image_large?: string;
+  count?: number;
+}
+
+/** Заказ с полной информацией */
+export interface IOrder {
+  _id: string;
+  number: number;
+  status: TOrderStatus;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  ingredients: string[];
+  price?: number;
+}
+
+/** Заказ с детальной информацией об ингредиентах */
+export interface IOrderWithIngredients extends Omit<IOrder, 'ingredients'> {
+  ingredients: IOrderIngredient[];
+  totalPrice: number;
+}
+
+/** Статистика заказов */
+export interface IOrderStats {
+  total: number;
+  totalToday: number;
+  ready: number[];
+  inProgress: number[];
+}
+
 /** Состояние заказа в Redux store */
 export interface IOrderState extends IBaseState {
   orderNumber: number | null;
 }
+
+/**
+ * Типы для ленты заказов (все заказы)
+ */
+
+/** Состояние ленты заказов в Redux store */
+export interface IFeedState extends IBaseState, IWebSocketState {
+  orders: IOrder[];
+  total: number;
+  totalToday: number;
+  ready: number[];
+  inProgress: number[];
+}
+
+/**
+ * Типы для истории заказов пользователя
+ */
+
+/** Состояние истории заказов в Redux store */
+export interface IProfileOrdersState extends IBaseState, IWebSocketState {
+  orders: IOrder[];
+}
+
 
 // ============================================================================
 // REDUX STORE
@@ -282,6 +364,8 @@ export interface IRootState {
   order: IOrderState;
   ingredients: IIngredientsState;
   ingredientDetails: IIngredientDetailsState;
+  feed: IFeedState;
+  profileOrders: IProfileOrdersState;
 }
 
 // ============================================================================
@@ -438,6 +522,281 @@ export type THandleLogoutFunction = () => Promise<void>;
 
 /** Функция проверки активности ссылки */
 export type TIsLinkActiveFunction = (path: string) => boolean;
+
+// ============================================================================
+// REDUX ACTIONS
+// ============================================================================
+
+/**
+ * Базовые типы для Redux actions
+ */
+
+/** Базовый интерфейс для action */
+export interface IBaseAction<T = string> {
+  type: T;
+}
+
+/** Action с payload */
+export interface IActionWithPayload<T = string, P = any> extends IBaseAction<T> {
+  payload: P;
+}
+
+/**
+ * Типы для actions ингредиентов
+ */
+
+/** Action для установки ингредиентов */
+export interface ISetIngredientsAction extends IActionWithPayload<'SET_INGREDIENTS', IIngredient[]> {}
+
+/** Action для установки состояния загрузки ингредиентов */
+export interface ISetIngredientsLoadingAction extends IActionWithPayload<'SET_INGREDIENTS_LOADING', boolean> {}
+
+/** Action для установки ошибки ингредиентов */
+export interface ISetIngredientsErrorAction extends IActionWithPayload<'SET_INGREDIENTS_ERROR', string> {}
+
+/** Action для увеличения счетчика ингредиента */
+export interface IIncrementIngredientCountAction extends IActionWithPayload<'INCREMENT_INGREDIENT_COUNT', string> {}
+
+/** Action для уменьшения счетчика ингредиента */
+export interface IDecrementIngredientCountAction extends IActionWithPayload<'DECREMENT_INGREDIENT_COUNT', string> {}
+
+/** Action для восстановления счетчиков ингредиентов */
+export interface IRestoreIngredientCountersAction extends IActionWithPayload<'RESTORE_INGREDIENT_COUNTERS', Record<string, number>> {}
+
+/** Union тип для всех actions ингредиентов */
+export type TIngredientsActions = 
+  | IBaseAction<'FETCH_INGREDIENTS_REQUEST'>
+  | IActionWithPayload<'FETCH_INGREDIENTS_SUCCESS', IIngredient[]>
+  | IActionWithPayload<'FETCH_INGREDIENTS_ERROR', string>
+  | ISetIngredientsAction
+  | ISetIngredientsLoadingAction
+  | ISetIngredientsErrorAction
+  | IIncrementIngredientCountAction
+  | IDecrementIngredientCountAction
+  | IRestoreIngredientCountersAction;
+
+/**
+ * Типы для actions конструктора
+ */
+
+/** Action для добавления ингредиента в конструктор */
+export interface IAddIngredientToConstructorAction extends IActionWithPayload<'ADD_INGREDIENT_TO_CONSTRUCTOR', IConstructorIngredient> {}
+
+/** Action для удаления ингредиента из конструктора */
+export interface IRemoveIngredientFromConstructorAction extends IActionWithPayload<'REMOVE_INGREDIENT_FROM_CONSTRUCTOR', { index: number; ingredientId: string }> {}
+
+/** Action для установки булки */
+export interface ISetBunAction extends IActionWithPayload<'SET_BUN', IIngredient> {}
+
+/** Action для перемещения ингредиента */
+export interface IMoveIngredientAction extends IActionWithPayload<'MOVE_INGREDIENT', { dragIndex: number; hoverIndex: number }> {}
+
+/** Action для восстановления конструктора без счетчиков */
+export interface IRestoreConstructorWithoutCountersAction extends IActionWithPayload<'RESTORE_CONSTRUCTOR_WITHOUT_COUNTERS', { bun: IIngredient | null; constructorIngredients: IConstructorIngredient[] }> {}
+
+/** Union тип для всех actions конструктора */
+export type TConstructorActions = 
+  | IAddIngredientToConstructorAction
+  | IRemoveIngredientFromConstructorAction
+  | ISetBunAction
+  | IMoveIngredientAction
+  | IBaseAction<'CLEAR_CONSTRUCTOR'>
+  | IBaseAction<'SAVE_CONSTRUCTOR_STATE'>
+  | IBaseAction<'RESTORE_CONSTRUCTOR_STATE'>
+  | IRestoreConstructorWithoutCountersAction;
+
+/**
+ * Типы для actions деталей ингредиента
+ */
+
+/** Action для установки текущего ингредиента */
+export interface ISetCurrentIngredientAction extends IActionWithPayload<'SET_CURRENT_INGREDIENT', IIngredient> {}
+
+/** Union тип для всех actions деталей ингредиента */
+export type TIngredientDetailsActions = 
+  | ISetCurrentIngredientAction
+  | IBaseAction<'CLEAR_CURRENT_INGREDIENT'>;
+
+/**
+ * Типы для actions заказов
+ */
+
+/** Action для установки номера заказа */
+export interface ISetOrderNumberAction extends IActionWithPayload<'SET_ORDER_NUMBER', number> {}
+
+/** Action для установки состояния загрузки заказа */
+export interface ISetOrderLoadingAction extends IActionWithPayload<'SET_ORDER_LOADING', boolean> {}
+
+/** Action для установки ошибки заказа */
+export interface ISetOrderErrorAction extends IActionWithPayload<'SET_ORDER_ERROR', string> {}
+
+/** Union тип для всех actions заказов */
+export type TOrderActions = 
+  | IBaseAction<'CREATE_ORDER_REQUEST'>
+  | IActionWithPayload<'CREATE_ORDER_SUCCESS', number>
+  | IActionWithPayload<'CREATE_ORDER_ERROR', string>
+  | ISetOrderNumberAction
+  | ISetOrderLoadingAction
+  | ISetOrderErrorAction
+  | IBaseAction<'CLEAR_ORDER'>;
+
+/**
+ * Типы для actions аутентификации
+ */
+
+/** Action для успешной регистрации */
+export interface IRegisterSuccessAction extends IActionWithPayload<'REGISTER_SUCCESS', { user: IUserData; accessToken: string; refreshToken: string }> {}
+
+/** Action для ошибки регистрации */
+export interface IRegisterErrorAction extends IActionWithPayload<'REGISTER_ERROR', string> {}
+
+/** Action для успешной авторизации */
+export interface ILoginSuccessAction extends IActionWithPayload<'LOGIN_SUCCESS', { user: IUserData; accessToken: string; refreshToken: string }> {}
+
+/** Action для ошибки авторизации */
+export interface ILoginErrorAction extends IActionWithPayload<'LOGIN_ERROR', string> {}
+
+/** Action для ошибки выхода */
+export interface ILogoutErrorAction extends IActionWithPayload<'LOGOUT_ERROR', string> {}
+
+/** Action для успешного обновления токена */
+export interface IRefreshTokenSuccessAction extends IActionWithPayload<'REFRESH_TOKEN_SUCCESS', { accessToken: string; refreshToken: string }> {}
+
+/** Action для ошибки обновления токена */
+export interface IRefreshTokenErrorAction extends IActionWithPayload<'REFRESH_TOKEN_ERROR', string> {}
+
+/** Action для установки данных пользователя */
+export interface ISetUserDataAction extends IActionWithPayload<'SET_USER_DATA', IUserData> {}
+
+/** Action для установки состояния загрузки аутентификации */
+export interface ISetAuthLoadingAction extends IActionWithPayload<'SET_AUTH_LOADING', boolean> {}
+
+/** Action для установки ошибки аутентификации */
+export interface ISetAuthErrorAction extends IActionWithPayload<'SET_AUTH_ERROR', string | null> {}
+
+/** Action для успешного получения данных пользователя */
+export interface IGetUserSuccessAction extends IActionWithPayload<'GET_USER_SUCCESS', IUserData> {}
+
+/** Action для ошибки получения данных пользователя */
+export interface IGetUserErrorAction extends IActionWithPayload<'GET_USER_ERROR', string> {}
+
+/** Action для успешного обновления данных пользователя */
+export interface IUpdateUserSuccessAction extends IActionWithPayload<'UPDATE_USER_SUCCESS', IUserData> {}
+
+/** Action для ошибки обновления данных пользователя */
+export interface IUpdateUserErrorAction extends IActionWithPayload<'UPDATE_USER_ERROR', string> {}
+
+/** Union тип для всех actions аутентификации */
+export type TAuthActions = 
+  | IBaseAction<'REGISTER_REQUEST'>
+  | IRegisterSuccessAction
+  | IRegisterErrorAction
+  | IBaseAction<'LOGIN_REQUEST'>
+  | ILoginSuccessAction
+  | ILoginErrorAction
+  | IBaseAction<'LOGOUT_REQUEST'>
+  | IBaseAction<'LOGOUT_SUCCESS'>
+  | ILogoutErrorAction
+  | IBaseAction<'REFRESH_TOKEN_REQUEST'>
+  | IRefreshTokenSuccessAction
+  | IRefreshTokenErrorAction
+  | ISetUserDataAction
+  | IBaseAction<'CLEAR_USER_DATA'>
+  | ISetAuthLoadingAction
+  | ISetAuthErrorAction
+  | IBaseAction<'CLEAR_AUTH_ERROR'>
+  | IBaseAction<'GET_USER_REQUEST'>
+  | IGetUserSuccessAction
+  | IGetUserErrorAction
+  | IBaseAction<'UPDATE_USER_REQUEST'>
+  | IUpdateUserSuccessAction
+  | IUpdateUserErrorAction;
+
+/**
+ * Типы для actions ленты заказов
+ */
+
+/** Action для запроса загрузки ленты заказов */
+export interface IFetchFeedRequestAction extends IBaseAction<'FETCH_FEED_REQUEST'> {}
+
+/** Action для успешной загрузки ленты заказов */
+export interface IFetchFeedSuccessAction extends IActionWithPayload<'FETCH_FEED_SUCCESS', IOrder[]> {}
+
+/** Action для ошибки загрузки ленты заказов */
+export interface IFetchFeedErrorAction extends IActionWithPayload<'FETCH_FEED_ERROR', string> {}
+
+/** Action для установки заказов в ленте */
+export interface ISetFeedOrdersAction extends IActionWithPayload<'SET_FEED_ORDERS', IOrder[]> {}
+
+/** Action для установки статистики ленты */
+export interface ISetFeedStatsAction extends IActionWithPayload<'SET_FEED_STATS', IOrderStats> {}
+
+/** Action для установки статуса WebSocket соединения ленты */
+export interface ISetFeedWebSocketStatusAction extends IActionWithPayload<'SET_FEED_WEBSOCKET_STATUS', TWebSocketStatus> {}
+
+/** Action для установки ошибки WebSocket соединения ленты */
+export interface ISetFeedWebSocketErrorAction extends IActionWithPayload<'SET_FEED_WEBSOCKET_ERROR', string | null> {}
+
+/** Action для очистки ленты заказов */
+export interface IClearFeedAction extends IBaseAction<'CLEAR_FEED'> {}
+
+/** Union тип для всех actions ленты заказов */
+export type TFeedActions = 
+  | IFetchFeedRequestAction
+  | IFetchFeedSuccessAction
+  | IFetchFeedErrorAction
+  | ISetFeedOrdersAction
+  | ISetFeedStatsAction
+  | ISetFeedWebSocketStatusAction
+  | ISetFeedWebSocketErrorAction
+  | IClearFeedAction;
+
+/**
+ * Типы для actions истории заказов пользователя
+ */
+
+/** Action для запроса загрузки истории заказов */
+export interface IFetchProfileOrdersRequestAction extends IBaseAction<'FETCH_PROFILE_ORDERS_REQUEST'> {}
+
+/** Action для успешной загрузки истории заказов */
+export interface IFetchProfileOrdersSuccessAction extends IActionWithPayload<'FETCH_PROFILE_ORDERS_SUCCESS', IOrder[]> {}
+
+/** Action для ошибки загрузки истории заказов */
+export interface IFetchProfileOrdersErrorAction extends IActionWithPayload<'FETCH_PROFILE_ORDERS_ERROR', string> {}
+
+/** Action для установки заказов в истории */
+export interface ISetProfileOrdersAction extends IActionWithPayload<'SET_PROFILE_ORDERS', IOrder[]> {}
+
+/** Action для установки статуса WebSocket соединения истории */
+export interface ISetProfileOrdersWebSocketStatusAction extends IActionWithPayload<'SET_PROFILE_ORDERS_WEBSOCKET_STATUS', TWebSocketStatus> {}
+
+/** Action для установки ошибки WebSocket соединения истории */
+export interface ISetProfileOrdersWebSocketErrorAction extends IActionWithPayload<'SET_PROFILE_ORDERS_WEBSOCKET_ERROR', string | null> {}
+
+/** Action для очистки истории заказов */
+export interface IClearProfileOrdersAction extends IBaseAction<'CLEAR_PROFILE_ORDERS'> {}
+
+/** Union тип для всех actions истории заказов */
+export type TProfileOrdersActions = 
+  | IFetchProfileOrdersRequestAction
+  | IFetchProfileOrdersSuccessAction
+  | IFetchProfileOrdersErrorAction
+  | ISetProfileOrdersAction
+  | ISetProfileOrdersWebSocketStatusAction
+  | ISetProfileOrdersWebSocketErrorAction
+  | IClearProfileOrdersAction;
+
+/**
+ * Union тип для всех actions приложения
+ */
+export type TAllActions = 
+  | TIngredientsActions
+  | TConstructorActions
+  | TIngredientDetailsActions
+  | TOrderActions
+  | TAuthActions
+  | TFeedActions
+  | TProfileOrdersActions;
 
 // ============================================================================
 // КАСТОМНЫЕ ХУКИ

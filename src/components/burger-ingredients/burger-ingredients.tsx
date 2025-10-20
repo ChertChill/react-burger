@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './burger-ingredients.module.css';
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import CategoryBlock from "../category-block/category-block";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-import { useModal } from '../../hooks';
+import { useModal, useTypedSelector, useTypedDispatch } from '../../hooks';
 import { setCurrentIngredient, clearCurrentIngredient } from '../../services/actions';
-import { IRootState, IIngredient, TIngredientType, ICategoryRefs } from '../../utils/types';
+import { IIngredient, TIngredientType, ICategoryRefs } from '../../utils/types';
 
 /**
  * Компонент для отображения списка ингредиентов
@@ -19,12 +18,12 @@ import { IRootState, IIngredient, TIngredientType, ICategoryRefs } from '../../u
  * который отображает модальное окно с деталями ингредиента.
  */
 export default function BurgerIngredients(): React.JSX.Element {
-    const dispatch = useDispatch();
+    const dispatch = useTypedDispatch();
     const navigate = useNavigate();
     const location = useLocation();
     
-    const { ingredients } = useSelector((state: IRootState) => state.ingredients);
-    const { currentIngredient } = useSelector((state: IRootState) => state.ingredientDetails);
+    const { ingredients } = useTypedSelector((state) => state.ingredients);
+    const { currentIngredient } = useTypedSelector((state) => state.ingredientDetails);
     const [current, setCurrent] = useState<TIngredientType>('bun');                          // Состояние активного таба
     const { isModalOpen, openModal, closeModal } = useModal();              // Кастомный хук для управления модальным окном
 

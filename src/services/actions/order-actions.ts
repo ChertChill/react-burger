@@ -9,6 +9,16 @@ import {
 } from './action-types';
 import { request } from '../../utils/checkResponse';
 import { authHeaders } from '../../utils/tokenUtils';
+import { 
+  IIngredient,
+  IConstructorIngredient,
+  TOrderActions,
+  ISetOrderNumberAction,
+  ISetOrderLoadingAction,
+  ISetOrderErrorAction
+} from '../../utils/types';
+import { ThunkAction } from 'redux-thunk';
+import { IRootState } from '../../utils/types';
 
 /**
  * Синхронные action creators для управления заказами
@@ -16,30 +26,30 @@ import { authHeaders } from '../../utils/tokenUtils';
 
 /**
  * Установка номера заказа
- * @param {number} orderNumber - номер созданного заказа
- * @returns {Object} action для установки номера заказа
+ * @param orderNumber - номер созданного заказа
+ * @returns action для установки номера заказа
  */
-export const setOrderNumber = (orderNumber) => ({
+export const setOrderNumber = (orderNumber: number): ISetOrderNumberAction => ({
   type: SET_ORDER_NUMBER,
   payload: orderNumber
 });
 
 /**
  * Установка состояния загрузки заказа
- * @param {boolean} loading - состояние загрузки
- * @returns {Object} action для установки состояния загрузки
+ * @param loading - состояние загрузки
+ * @returns action для установки состояния загрузки
  */
-export const setOrderLoading = (loading) => ({
+export const setOrderLoading = (loading: boolean): ISetOrderLoadingAction => ({
   type: SET_ORDER_LOADING,
   payload: loading
 });
 
 /**
  * Установка ошибки при создании заказа
- * @param {string} error - сообщение об ошибке
- * @returns {Object} action для установки ошибки
+ * @param error - сообщение об ошибке
+ * @returns action для установки ошибки
  */
-export const setOrderError = (error) => ({
+export const setOrderError = (error: string): ISetOrderErrorAction => ({
   type: SET_ORDER_ERROR,
   payload: error
 });
@@ -47,9 +57,9 @@ export const setOrderError = (error) => ({
 /**
  * Очистка данных заказа
  * Сбрасывает номер заказа, состояние загрузки и ошибки
- * @returns {Object} action для очистки заказа
+ * @returns action для очистки заказа
  */
-export const clearOrder = () => ({
+export const clearOrder = (): { type: typeof CLEAR_ORDER } => ({
   type: CLEAR_ORDER
 });
 
@@ -58,11 +68,14 @@ export const clearOrder = () => ({
  * Отправляет запрос на сервер с данными о выбранных ингредиентах
  * Включает валидацию наличия булки и начинки
  * Автоматически обновляет токен при необходимости
- * @param {Object} bun - объект выбранной булки
- * @param {Array} constructorIngredients - массив ингредиентов конструктора
- * @returns {Function} thunk функция для создания заказа
+ * @param bun - объект выбранной булки
+ * @param constructorIngredients - массив ингредиентов конструктора
+ * @returns thunk функция для создания заказа
  */
-export const createOrder = (bun, constructorIngredients) => {
+export const createOrder = (
+  bun: IIngredient, 
+  constructorIngredients: IConstructorIngredient[]
+): ThunkAction<void, IRootState, unknown, TOrderActions> => {
   return async (dispatch) => {
     try {
       dispatch({ type: CREATE_ORDER_REQUEST });
@@ -89,11 +102,11 @@ export const createOrder = (bun, constructorIngredients) => {
         body: JSON.stringify({
           ingredients: ingredientIds
         })
-      });
+      }) as unknown as { order: { number: number } };
       
       dispatch({ type: CREATE_ORDER_SUCCESS, payload: data.order.number });
     } catch (error) {
-      dispatch({ type: CREATE_ORDER_ERROR, payload: error.message });
+      dispatch({ type: CREATE_ORDER_ERROR, payload: (error as Error).message });
     }
   };
 };

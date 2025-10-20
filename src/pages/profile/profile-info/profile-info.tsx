@@ -124,7 +124,7 @@ const ProfileInfo: React.FC = () => {
     }
 
     return (
-        <div className={styles.profileInfo}>            
+        <div className={`${styles.profileInfo} mt-20`}>            
             {error && (
                 <div className={styles.error}>
                     Ошибка: {getErrorText(error)}

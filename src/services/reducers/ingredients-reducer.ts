@@ -9,12 +9,16 @@ import {
   DECREMENT_INGREDIENT_COUNT,
   RESTORE_INGREDIENT_COUNTERS
 } from '../actions/action-types';
+import { 
+  IIngredientsState, 
+  TIngredientsActions
+} from '../../utils/types';
 
 /**
  * Начальное состояние для reducer ингредиентов
  * Содержит массив ингредиентов, состояние загрузки и ошибки
  */
-const initialState = {
+const initialState: IIngredientsState = {
   ingredients: [],
   loading: false,
   error: null
@@ -24,11 +28,11 @@ const initialState = {
  * Reducer для управления состоянием ингредиентов
  * Обрабатывает загрузку данных, управление счетчиками и ошибками
  * 
- * @param {Object} state - текущее состояние
- * @param {Object} action - действие для обработки
- * @returns {Object} новое состояние
+ * @param state - текущее состояние
+ * @param action - действие для обработки
+ * @returns новое состояние
  */
-const ingredientsReducer = (state = initialState, action) => {
+const ingredientsReducer = (state: IIngredientsState = initialState, action: TIngredientsActions): IIngredientsState => {
   switch (action.type) {
     case FETCH_INGREDIENTS_REQUEST:
       return {

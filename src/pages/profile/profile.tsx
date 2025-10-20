@@ -10,7 +10,7 @@ import ProfileNavigation from './profile-navigation/profile-navigation';
 const Profile: React.FC = () => {
     return (
         <div className={styles.container}>
-            <div className={`${styles.content} mt-20`}>
+            <div className={`${styles.content}`}>
                 {/* Навигационная панель */}
                 <ProfileNavigation />
 
