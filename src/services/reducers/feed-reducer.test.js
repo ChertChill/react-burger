@@ -1,4 +1,4 @@
-import { feedReducer } from './feed-reducer';
+import { feedReducer, initialState } from './feed-reducer';
 import {
   FETCH_FEED_REQUEST,
   FETCH_FEED_SUCCESS,
@@ -43,19 +43,6 @@ describe('feedReducer', () => {
     inProgress: [12346, 12348]
   };
 
-  // Начальное состояние
-  const initialState = {
-    loading: false,
-    error: null,
-    orders: [],
-    total: 0,
-    totalToday: 0,
-    ready: [],
-    inProgress: [],
-    status: 'CLOSED',
-    reconnectAttempts: 0,
-    maxReconnectAttempts: 5
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

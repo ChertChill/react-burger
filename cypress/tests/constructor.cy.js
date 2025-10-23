@@ -1,4 +1,4 @@
-import { mockIngredients, mockUser, mockTokens, mockOrder } from '../support/testData'
+import { mockIngredients, mockUser, mockTokens, mockOrder, SELECTORS } from '../support/testData'
 
 describe('Конструктор бургеров', () => {
   beforeEach(() => {
@@ -29,170 +29,170 @@ describe('Конструктор бургеров', () => {
   describe('Перемещение ингредиентов', () => {
     it('должен перемещать булку в конструктор', () => {
       // Находим булку в списке ингредиентов
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="bun"]')
         .first()
         .should('be.visible')
 
       // Перемещаем булку в верхнюю зону конструктора
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="bun"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="bun-top-drop-zone"]')
+      cy.get(SELECTORS.BUN_TOP_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем, что булка появилась в конструкторе
-      cy.get('[data-testid="bun-top-drop-zone"]')
+      cy.get(SELECTORS.BUN_TOP_DROP_ZONE)
         .should('contain', 'Краторная булка N-200i (верх)')
       
-      cy.get('[data-testid="bun-bottom-drop-zone"]')
+      cy.get(SELECTORS.BUN_BOTTOM_DROP_ZONE)
         .should('contain', 'Краторная булка N-200i (низ)')
 
       // Проверяем, что счетчик булки стал равен 2
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="bun"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '2')
     })
 
     it('должен перемещать ингредиент в конструктор', () => {
       // Перемещаем соус
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем, что соус появился в конструкторе
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('contain', 'Соус Spicy-X')
 
       // Проверяем, что счетчик соуса стал равен 1
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '1')
     })
 
     it('должен перемещать несколько ингредиентов в конструктор', () => {
       // Добавляем начинку
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Добавляем соус
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем, что все ингредиенты появились в конструкторе
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('have.length', 2)
       
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .first()
         .should('contain', 'Биокотлета из марсианской Магнолии')
       
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .last()
         .should('contain', 'Соус Spicy-X')
 
       // Проверяем счетчики ингредиентов
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '1')
 
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '1')
     })
 
     it('должен перемещать ингредиенты внутри конструктора', () => {
       // Добавляем два ингредиента
       // Добавляем первый ингредиент (начинку)
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Добавляем второй ингредиент (соус)
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем начальный порядок
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('have.length', 2)
       
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .first()
         .should('contain', 'Биокотлета из марсианской Магнолии')
       
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .last()
         .should('contain', 'Соус Spicy-X')
 
       // Перемещаем первый элемент на место второго
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .first()
         .then(($firstElement) => {
-          cy.get('[data-testid="constructor-ingredient"]')
+          cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
             .last()
             .then(($lastElement) => {
               const firstRect = $firstElement[0].getBoundingClientRect()
               const lastRect = $lastElement[0].getBoundingClientRect()
               
               // Перемещаем первый элемент на второй
-              cy.get('[data-testid="constructor-ingredient"]')
+              cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
                 .first()
                 .trigger('mousedown', { 
                   which: 1,
@@ -203,7 +203,7 @@ describe('Конструктор бургеров', () => {
               
               cy.wait(100)
               
-              cy.get('[data-testid="constructor-ingredient"]')
+              cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
                 .last()
                 .trigger('dragover', { 
                   clientX: lastRect.left + lastRect.width / 2,
@@ -213,7 +213,7 @@ describe('Конструктор бургеров', () => {
               
               cy.wait(100)
               
-              cy.get('[data-testid="constructor-ingredient"]')
+              cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
                 .last()
                 .trigger('drop', { 
                   clientX: lastRect.left + lastRect.width / 2,
@@ -223,7 +223,7 @@ describe('Конструктор бургеров', () => {
               
               cy.wait(100)
               
-              cy.get('[data-testid="constructor-ingredient"]')
+              cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
                 .first()
                 .trigger('dragend')
                 .trigger('mouseup', { which: 1 })
@@ -231,11 +231,11 @@ describe('Конструктор бургеров', () => {
         })
 
       // Проверяем, что порядок изменился - первый элемент стал вторым
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .first()
         .should('contain', 'Соус Spicy-X')
       
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .last()
         .should('contain', 'Биокотлета из марсианской Магнолии')
     })
@@ -244,88 +244,88 @@ describe('Конструктор бургеров', () => {
   describe('Удаление ингредиентов из конструктора', () => {
     it('должен удалять ингредиент из конструктора', () => {
       // Добавляем ингредиент из main
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
         .trigger('dragstart')
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем, что ингредиент есть в конструкторе
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('have.length', 1)
         .should('contain', 'Биокотлета из марсианской Магнолии')
 
       // Проверяем, что счетчик ингредиента равен 1
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '1')
 
       // Находим и кликаем кнопку удаления (constructor-element__action)
-      cy.get('[data-testid="constructor-ingredient"]')
-        .find('.constructor-element__action')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
+        .find(SELECTORS.CONSTRUCTOR_ELEMENT_ACTION)
         .click()
 
       // Проверяем, что ингредиент удален
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('not.exist')
 
       // Проверяем, что счетчик ингредиента исчез
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('not.exist')
     })
 
     it('должен добавлять и удалять несколько одинаковых ингредиентов с изменением счетчика', () => {
       // Добавляем первый соус
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
         .trigger('dragstart')
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Добавляем второй такой же соус
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
         .trigger('dragstart')
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)
 
       // Проверяем, что счетчик соуса равен 2
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '2')
 
       // Удаляем один ингредиент из конструктора
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .first()
-        .find('.constructor-element__action')
+        .find(SELECTORS.CONSTRUCTOR_ELEMENT_ACTION)
         .click()
 
       cy.wait(100)
 
       // Проверяем, что счетчик уменьшился до 1
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="sauce"]')
         .first()
-        .find('.counter')
+        .find(SELECTORS.COUNTER)
         .should('contain', '1')
     })
   })
@@ -333,7 +333,7 @@ describe('Конструктор бургеров', () => {
   describe('Отображение стоимости', () => {
     it('должен отображать общую стоимость бургера', () => {
       // Добавляем булку
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="bun"]')
         .first()
         .trigger('dragstart')
@@ -349,14 +349,14 @@ describe('Конструктор бургеров', () => {
       cy.contains('2510') // 1255 * 2 = 2510
 
       // Добавляем начинку
-      cy.get('[data-testid="ingredient-item"]')
+      cy.get(SELECTORS.INGREDIENT_ITEM)
         .filter('[data-ingredient-type="main"]')
         .first()
         .trigger('dragstart')
       
       cy.wait(100)
       
-      cy.get('[data-testid="middle-ingredients-drop-zone"]')
+      cy.get(SELECTORS.MIDDLE_INGREDIENTS_DROP_ZONE)
         .trigger('drop')
       
       cy.wait(100)

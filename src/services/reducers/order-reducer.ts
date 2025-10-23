@@ -16,7 +16,7 @@ import {
  * Начальное состояние для reducer заказа
  * Содержит номер заказа, состояние загрузки и ошибки
  */
-const initialState: IOrderState = {
+export const initialState: IOrderState = {
   orderNumber: null,
   loading: false,
   error: null

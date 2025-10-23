@@ -1,4 +1,4 @@
-import authReducer from './auth-reducer';
+import authReducer, { initialState } from './auth-reducer';
 import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
@@ -43,27 +43,6 @@ describe('authReducer', () => {
     refreshToken: mockTokens.refreshToken
   };
 
-  // Начальное состояние
-  const initialState = {
-    user: null,
-    accessToken: null,
-    refreshToken: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
-    registerLoading: false,
-    loginLoading: false,
-    logoutLoading: false,
-    refreshTokenLoading: false,
-    getUserLoading: false,
-    updateUserLoading: false,
-    registerError: null,
-    loginError: null,
-    logoutError: null,
-    refreshTokenError: null,
-    getUserError: null,
-    updateUserError: null
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

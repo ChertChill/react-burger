@@ -1,4 +1,4 @@
-import ingredientsReducer from './ingredients-reducer';
+import ingredientsReducer, { initialState } from './ingredients-reducer';
 import {
   FETCH_INGREDIENTS_REQUEST,
   FETCH_INGREDIENTS_SUCCESS,
@@ -54,12 +54,6 @@ describe('ingredientsReducer', () => {
 
   const mockIngredients = [mockIngredient1, mockIngredient2, mockIngredient3];
 
-  // Начальное состояние
-  const initialState = {
-    ingredients: [],
-    loading: false,
-    error: null
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

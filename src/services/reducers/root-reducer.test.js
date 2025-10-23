@@ -1,4 +1,11 @@
 import rootReducer from './root-reducer';
+import { initialState as ingredientsInitialState } from './ingredients-reducer';
+import { initialState as constructorInitialState } from './constructor-reducer';
+import { initialState as ingredientDetailsInitialState } from './ingredient-details-reducer';
+import { initialState as orderInitialState } from './order-reducer';
+import { initialState as authInitialState } from './auth-reducer';
+import { initialState as feedInitialState } from './feed-reducer';
+import { initialState as profileOrdersInitialState } from './profile-orders-reducer';
 import {
   SET_INGREDIENTS,
   ADD_INGREDIENT_TO_CONSTRUCTOR,
@@ -47,63 +54,13 @@ describe('rootReducer', () => {
 
   // Начальное состояние
   const initialState = {
-    ingredients: {
-      ingredients: [],
-      loading: false,
-      error: null
-    },
-    constructor: {
-      constructorIngredients: [],
-      bun: null
-    },
-    ingredientDetails: {
-      currentIngredient: null
-    },
-    order: {
-      orderNumber: null,
-      loading: false,
-      error: null
-    },
-    auth: {
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-      registerLoading: false,
-      loginLoading: false,
-      logoutLoading: false,
-      refreshTokenLoading: false,
-      getUserLoading: false,
-      updateUserLoading: false,
-      registerError: null,
-      loginError: null,
-      logoutError: null,
-      refreshTokenError: null,
-      getUserError: null,
-      updateUserError: null
-    },
-    feed: {
-      loading: false,
-      error: null,
-      orders: [],
-      total: 0,
-      totalToday: 0,
-      ready: [],
-      inProgress: [],
-      status: 'CLOSED',
-      reconnectAttempts: 0,
-      maxReconnectAttempts: 5
-    },
-    profileOrders: {
-      loading: false,
-      error: null,
-      orders: [],
-      status: 'CLOSED',
-      reconnectAttempts: 0,
-      maxReconnectAttempts: 5
-    }
+    ingredients: ingredientsInitialState,
+    constructor: constructorInitialState,
+    ingredientDetails: ingredientDetailsInitialState,
+    order: orderInitialState,
+    auth: authInitialState,
+    feed: feedInitialState,
+    profileOrders: profileOrdersInitialState
   };
 
   describe('Начальное состояние', () => {

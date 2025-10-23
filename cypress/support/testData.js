@@ -100,3 +100,40 @@ export const mockOrder = {
     number: 12345
   }
 }
+
+// ========================================
+// СЕЛЕКТОРЫ ДЛЯ ТЕСТОВ
+// ========================================
+
+// Основные селекторы ингредиентов
+export const SELECTORS = {
+  // Ингредиенты
+  INGREDIENT_ITEM: '[data-testid="ingredient-item"]',
+  INGREDIENT_DETAILS: '[data-testid="ingredient-details"]',
+  
+  // Конструктор
+  CONSTRUCTOR_INGREDIENT: '[data-testid="constructor-ingredient"]',
+  MIDDLE_INGREDIENTS_DROP_ZONE: '[data-testid="middle-ingredients-drop-zone"]',
+  BUN_TOP_DROP_ZONE: '[data-testid="bun-top-drop-zone"]',
+  BUN_BOTTOM_DROP_ZONE: '[data-testid="bun-bottom-drop-zone"]',
+  
+  // Модальные окна
+  MODAL_OVERLAY: '[data-testid="modal-overlay"]',
+  MODAL_CLOSE_BUTTON: '[data-testid="modal-close-button"]',
+  
+  // Заказы
+  ORDER_BUTTON: '[data-testid="order-button"]',
+  ORDER_CONFIRM: '[data-testid="order-confirm"]',
+  ORDER_NUMBER: '[data-testid="order-number"]',
+  ORDER_ERROR: '[data-testid="order-error"]',
+  
+  // Формы
+  EMAIL_INPUT: 'input[type="email"]',
+  PASSWORD_INPUT: 'input[type="password"]',
+  SUBMIT_BUTTON: 'button[type="submit"]',
+  
+  // Общие элементы
+  BODY: 'body',
+  COUNTER: '.counter',
+  CONSTRUCTOR_ELEMENT_ACTION: '.constructor-element__action'
+}

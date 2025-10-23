@@ -1,4 +1,4 @@
-import ingredientDetailsReducer from './ingredient-details-reducer';
+import ingredientDetailsReducer, { initialState } from './ingredient-details-reducer';
 import {
   SET_CURRENT_INGREDIENT,
   CLEAR_CURRENT_INGREDIENT
@@ -45,10 +45,6 @@ describe('ingredientDetailsReducer', () => {
     image_large: 'https://code.s3.yandex.net/react/code/sauce-02-large.png'
   };
 
-  // Начальное состояние
-  const initialState = {
-    currentIngredient: null
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

@@ -17,7 +17,7 @@ import {
  * Начальное состояние для reducer конструктора
  * Содержит массив ингредиентов конструктора и выбранную булку
  */
-const initialState: IConstructorState = {
+export const initialState: IConstructorState = {
   constructorIngredients: [],
   bun: null
 };

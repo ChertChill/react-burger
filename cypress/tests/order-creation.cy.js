@@ -1,4 +1,4 @@
-import { mockIngredients, mockUser, mockTokens, mockOrder } from '../support/testData'
+import { mockIngredients, mockUser, mockTokens, mockOrder, SELECTORS } from '../support/testData'
 
 describe('Создание заказа', () => {
   beforeEach(() => {
@@ -45,16 +45,16 @@ describe('Создание заказа', () => {
 
     // Вспомогательная функция для создания заказа
     const createOrder = () => {
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
       cy.wait('@createOrder')
     }
 
     // Вспомогательная функция для проверки модального окна
     const checkOrderModal = () => {
-      cy.get('[data-testid="modal-overlay"]').should('be.visible')
-      cy.get('[data-testid="order-confirm"]').should('be.visible')
-      cy.get('[data-testid="order-number"]').should('contain', '12345')
-      cy.get('[data-testid="order-confirm"]')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('be.visible')
+      cy.get(SELECTORS.ORDER_CONFIRM).should('be.visible')
+      cy.get(SELECTORS.ORDER_NUMBER).should('contain', '12345')
+      cy.get(SELECTORS.ORDER_CONFIRM)
         .should('contain', 'идентификатор заказа')
         .should('contain', 'Ваш заказ начали готовить')
         .should('contain', 'Дождитесь готовности на орбитальной станции')
@@ -73,10 +73,10 @@ describe('Создание заказа', () => {
         delay: 2000
       }).as('createOrderDelayed')
 
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
 
       // Проверяем состояние загрузки и счетчик времени
-      cy.get('[data-testid="order-button"]')
+      cy.get(SELECTORS.ORDER_BUTTON)
         .should('be.disabled')
         .should('contain', 'Оформление...')
       
@@ -87,39 +87,39 @@ describe('Создание заказа', () => {
       cy.contains('1/15 сек').should('be.visible')
 
       cy.wait('@createOrderDelayed')
-      cy.get('[data-testid="modal-overlay"]').should('be.visible')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('be.visible')
     })
 
     it('должен закрывать модальное окно разными способами (по кнопке закрытия, по клику на фон, по клавише Esc) и очищать конструктор', () => {
       // Создаем заказ один раз
       createOrder()
-      cy.get('[data-testid="modal-overlay"]').should('be.visible')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('be.visible')
 
       // Тестируем закрытие через кнопку закрытия
-      cy.get('[data-testid="modal-close-button"]').click()
-      cy.get('[data-testid="modal-overlay"]').should('not.exist')
+      cy.get(SELECTORS.MODAL_CLOSE_BUTTON).click()
+      cy.get(SELECTORS.MODAL_OVERLAY).should('not.exist')
 
       // Создаем заказ снова для следующего теста
       cy.buildBurger()
       createOrder()
-      cy.get('[data-testid="modal-overlay"]').should('be.visible')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('be.visible')
 
       // Тестируем закрытие через клик на фон
-      cy.get('[data-testid="modal-overlay"]').click({ force: true })
-      cy.get('[data-testid="modal-overlay"]').should('not.exist')
+      cy.get(SELECTORS.MODAL_OVERLAY).click({ force: true })
+      cy.get(SELECTORS.MODAL_OVERLAY).should('not.exist')
 
       // Создаем заказ снова для следующего теста
       cy.buildBurger()
       createOrder()
-      cy.get('[data-testid="modal-overlay"]').should('be.visible')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('be.visible')
 
       // Тестируем закрытие через Escape
-      cy.get('body').type('{esc}')
-      cy.get('[data-testid="modal-overlay"]').should('not.exist')
+      cy.get(SELECTORS.BODY).type('{esc}')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('not.exist')
 
       // Проверяем очистку конструктора
-      cy.get('[data-testid="constructor-ingredient"]').should('not.exist')
-      cy.get('[data-testid="order-button"]').should('not.exist')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist')
+      cy.get(SELECTORS.ORDER_BUTTON).should('not.exist')
     })
   })
 
@@ -128,25 +128,25 @@ describe('Создание заказа', () => {
       cy.clearState()
       cy.buildBurger()
       
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
       cy.url().should('include', '/login')
 
       // Авторизуемся
-      cy.get('input[type="email"]').type('chertchill@yandex.ru')
-      cy.get('input[type="password"]').type('123')
-      cy.get('button[type="submit"]').click()
+      cy.get(SELECTORS.EMAIL_INPUT).type('chertchill@yandex.ru')
+      cy.get(SELECTORS.PASSWORD_INPUT).type('123')
+      cy.get(SELECTORS.SUBMIT_BUTTON).click()
       cy.wait('@login')
       cy.url().should('eq', Cypress.config().baseUrl + '/')
 
       // Проверяем сохранение состояния конструктора
-      cy.get('[data-testid="constructor-ingredient"]')
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
         .should('have.length', 1)
         .should('contain', 'Биокотлета из марсианской Магнолии')
-      cy.get('[data-testid="bun-top-drop-zone"]')
+      cy.get(SELECTORS.BUN_TOP_DROP_ZONE)
         .should('contain', 'Краторная булка N-200i (верх)')
-      cy.get('[data-testid="bun-bottom-drop-zone"]')
+      cy.get(SELECTORS.BUN_BOTTOM_DROP_ZONE)
         .should('contain', 'Краторная булка N-200i (низ)')
-      cy.get('[data-testid="order-button"]')
+      cy.get(SELECTORS.ORDER_BUTTON)
         .should('be.visible')
         .should('not.be.disabled')
     })
@@ -156,25 +156,25 @@ describe('Создание заказа', () => {
       
       // Вспомогательная функция для проверки ошибки валидации
       const checkValidationError = (errorText) => {
-        cy.get('[data-testid="order-error"]')
+        cy.get(SELECTORS.ORDER_ERROR)
           .should('be.visible')
           .should('contain', errorText)
-        cy.get('[data-testid="modal-overlay"]').should('not.exist')
+        cy.get(SELECTORS.MODAL_OVERLAY).should('not.exist')
       }
 
       // Проверяем отсутствие кнопки без ингредиентов
-      cy.get('[data-testid="order-button"]').should('not.exist')
+      cy.get(SELECTORS.ORDER_BUTTON).should('not.exist')
 
       // Тестируем валидацию без булки
       cy.addOnlyFilling()
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
       checkValidationError('Необходимо выбрать булку')
 
       // Тестируем валидацию без начинки
       cy.reload()
       cy.waitForIngredients()
       cy.addOnlyBun()
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
       checkValidationError('Необходимо добавить начинку')
     })
 
@@ -187,13 +187,13 @@ describe('Создание заказа', () => {
       }).as('createOrderError')
 
       cy.buildBurger()
-      cy.get('[data-testid="order-button"]').click()
+      cy.get(SELECTORS.ORDER_BUTTON).click()
       cy.wait('@createOrderError')
 
-      cy.get('[data-testid="order-error"]')
+      cy.get(SELECTORS.ORDER_ERROR)
         .should('be.visible')
         .should('contain', 'Ошибка 500')
-      cy.get('[data-testid="modal-overlay"]').should('not.exist')
+      cy.get(SELECTORS.MODAL_OVERLAY).should('not.exist')
     })
   })
 })

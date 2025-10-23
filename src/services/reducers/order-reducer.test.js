@@ -1,4 +1,4 @@
-import orderReducer from './order-reducer';
+import orderReducer, { initialState } from './order-reducer';
 import {
   CREATE_ORDER_REQUEST,
   CREATE_ORDER_SUCCESS,
@@ -15,12 +15,6 @@ describe('orderReducer', () => {
   const mockOrderNumber2 = 67890;
   const mockError = 'Ошибка создания заказа';
 
-  // Начальное состояние
-  const initialState = {
-    orderNumber: null,
-    loading: false,
-    error: null
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

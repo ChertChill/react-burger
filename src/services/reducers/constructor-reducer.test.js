@@ -1,4 +1,4 @@
-import constructorReducer from './constructor-reducer';
+import constructorReducer, { initialState } from './constructor-reducer';
 import {
   ADD_INGREDIENT_TO_CONSTRUCTOR,
   REMOVE_INGREDIENT_FROM_CONSTRUCTOR,
@@ -57,11 +57,6 @@ describe('constructorReducer', () => {
     id: 'constructor-ingredient-2'
   };
 
-  // Начальное состояние
-  const initialState = {
-    constructorIngredients: [],
-    bun: null
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {

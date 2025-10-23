@@ -11,7 +11,7 @@ import {
  * Начальное состояние для reducer деталей ингредиента
  * Содержит данные о текущем просматриваемом ингредиенте
  */
-const initialState: IIngredientDetailsState = {
+export const initialState: IIngredientDetailsState = {
   currentIngredient: null
 };
 

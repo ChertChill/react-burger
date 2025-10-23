@@ -1,4 +1,4 @@
-import { profileOrdersReducer } from './profile-orders-reducer';
+import { profileOrdersReducer, initialState } from './profile-orders-reducer';
 import {
   FETCH_PROFILE_ORDERS_REQUEST,
   FETCH_PROFILE_ORDERS_SUCCESS,
@@ -46,15 +46,6 @@ describe('profileOrdersReducer', () => {
 
   const mockOrders = [mockOrder1, mockOrder2, mockOrder3];
 
-  // Начальное состояние
-  const initialState = {
-    loading: false,
-    error: null,
-    orders: [],
-    status: 'CLOSED',
-    reconnectAttempts: 0,
-    maxReconnectAttempts: 5
-  };
 
   describe('Начальное состояние', () => {
     it('должен возвращать начальное состояние при неизвестном action', () => {
