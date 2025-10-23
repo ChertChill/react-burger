@@ -118,6 +118,9 @@ const DraggableConstructorItem: React.FC<IDraggableConstructorItemProps> = ({ in
             className={`${styles.element} ${isDragging ? styles.dragging : ''}`}
             data-handler-id={handlerId}
             data-dragging={isDragging}
+            data-testid="constructor-ingredient"
+            data-ingredient-id={ingredient._id}
+            data-ingredient-name={ingredient.name}
         >
             {/* Иконка перетаскивания */}
             <DragIcon type="primary" />

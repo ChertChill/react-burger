@@ -32,11 +32,17 @@ export default function OrderConfirm(): React.JSX.Element {
     }
     
     return (
-        <div className={`${styles.group} mt-4 mb-20`}>
+        <div 
+            className={`${styles.group} mt-4 mb-20`}
+            data-testid="order-confirm"
+        >
 
             {/* Номер заказа */}
             <div className={styles.number}>
-                <p className="text text_type_digits-large">
+                <p 
+                    className="text text_type_digits-large"
+                    data-testid="order-number"
+                >
                     {orderNumber}
                 </p>
             </div>

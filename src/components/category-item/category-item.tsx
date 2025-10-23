@@ -53,7 +53,11 @@ const CategoryItem: React.FC<ICategoryItemProps> = ({ item, onIngredientClick })
             ref={drag as any}
             className={`${styles.item} ${isDragging ? styles.dragging : ''}`} 
             key={item._id} 
-            onClick={handleClick} 
+            onClick={handleClick}
+            data-testid="ingredient-item"
+            data-ingredient-id={item._id}
+            data-ingredient-type={item.type}
+            data-ingredient-name={item.name}
         >
             
             {/* Счетчик количества ингредиентов в заказе */}

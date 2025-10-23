@@ -2,6 +2,8 @@
 
 Интерактивное веб-приложение для создания кастомных бургеров с полной системой аутентификации, drag & drop конструктором и интеграцией с API.
 
+**Приложение опубликовано здесь** – https://chertchill.nomorepartiessbs.ru/
+
 ## Содержание
 
 - [Описание проекта](#описание-проекта)
@@ -65,140 +67,178 @@ React Burger - это полнофункциональное веб-прилож
 - **@types/uuid 10.0.0** - типы для uuid
 - **prop-types 15.8.1** - проверка типов props для React компонентов
 
+### Тестирование
+- **Cypress** - E2E тестирование с полным покрытием пользовательских сценариев
+- **Jest** - Unit тестирование Redux reducers и утилит
+- **@testing-library/react** - тестирование React компонентов
+- **@testing-library/jest-dom** - дополнительные матчеры для Jest
+
+### Дополнительные библиотеки
+- **uuid 11.1.0** - генерация уникальных идентификаторов
+- **clsx** - утилита для условного объединения CSS классов
+
 ## Структура проекта
 
 ```
-src/
-├── components/                     # React компоненты
-│   ├── app/                        # Главный компонент приложения
-│   │   ├── app.jsx                 # Основная логика приложения
-│   │   └── app.module.css          # Стили главного компонента
-│   ├── app-header/                 # Шапка приложения с навигацией
-│   │   ├── app-header.jsx          # Компонент шапки
-│   │   └── app-header.module.css
-│   ├── burger-constructor/         # Конструктор бургеров
-│   │   ├── burger-constructor.jsx
-│   │   ├── burger-constructor.module.css
-│   │   └── draggable-constructor-item.jsx
-│   ├── burger-ingredients/         # Каталог ингредиентов
-│   │   ├── burger-ingredients.jsx
-│   │   └── burger-ingredients.module.css
-│   ├── category-block/             # Блок категории ингредиентов
-│   │   ├── category-block.jsx
-│   │   └── category-block.module.css
-│   ├── category-item/              # Элемент категории
-│   │   ├── category-item.jsx
-│   │   └── category-item.module.css
-│   ├── ingredient-details/         # Детали ингредиента
-│   │   ├── ingredient-details.jsx
-│   │   └── ingredient-details.module.css
-│   ├── loader/                     # Компонент загрузки
-│   │   ├── loader.jsx
-│   │   └── loader.module.css
-│   ├── mobile-restriction/         # Ограничение для мобильных устройств
-│   │   ├── mobile-restriction.jsx
-│   │   └── mobile-restriction.module.css
-│   ├── modal/                      # Модальные окна
-│   │   ├── modal.jsx
-│   │   └── modal.module.css
-│   ├── modal-overlay/              # Оверлей для модальных окон
-│   │   ├── modal-overlay.jsx
-│   │   └── modal-overlay.module.css
-│   ├── nutrition-item/             # Элемент информации о питательности
-│   │   ├── nutrition-item.jsx
-│   │   └── nutrition-item.module.css
-│   ├── order-card/                 # Карточка заказа в ленте
-│   │   ├── order-card.jsx
-│   │   └── order-card.module.css
-│   ├── order-confirm/              # Подтверждение заказа
-│   │   ├── order-confirm.jsx
-│   │   └── order-confirm.module.css
-│   ├── order-details/              # Детали заказа
-│   │   ├── order-details.jsx
-│   │   └── order-details.module.css
-│   ├── order-feed/                 # Лента заказов
-│   │   ├── order-feed.jsx
-│   │   └── order-feed.module.css
-│   ├── order-stats/                # Статистика заказов
-│   │   ├── order-stats.jsx
-│   │   └── order-stats.module.css
-│   └── protected-route/            # Компонент защищенных маршрутов
-│       └── protected-route.jsx
-├── hooks/                          # Кастомные React хуки
-│   ├── index.ts                    # Центральный экспорт хуков
-│   ├── useModal.ts                 # Хук для управления модальными окнами
-│   ├── useForm.ts                  # Хук для управления состоянием форм
-│   ├── useTypedSelector.ts         # Типизированный хук для Redux store
-│   └── useTypedDispatch.ts         # Типизированный хук для Redux dispatch
-├── images/                         # Статические изображения
-│   └── order-status.png            # Изображение статуса заказа
-├── pages/                          # Страницы приложения
-│   ├── auth/                       # Страницы аутентификации
-│   │   ├── auth.module.css         # Общие стили для auth страниц
-│   │   ├── forgot-password.tsx     # Восстановление пароля
-│   │   ├── login.tsx               # Авторизация
-│   │   ├── register.tsx            # Регистрация
-│   │   └── reset-password.tsx     # Сброс пароля
-│   ├── feed/                       # Страница ленты заказов
-│   │   ├── feed.tsx
-│   │   └── feed.module.css
-│   ├── home.tsx                    # Главная страница
-│   ├── ingredient-details/         # Страница деталей ингредиента
-│   │   ├── ingredient-details.tsx
-│   │   └── ingredient-details.module.css
-│   ├── not-found/                  # Страница 404
-│   │   ├── not-found.tsx
-│   │   └── not-found.module.css
-│   ├── order-details-page/         # Страница деталей заказа
-│   │   ├── order-details-page.tsx
-│   │   └── order-details-page.module.css
-│   └── profile/                    # Профиль пользователя
-│       ├── profile.tsx             # Главная страница профиля
-│       ├── profile.module.css      # Стили профиля
-│       ├── profile-info/           # Информация профиля
-│       │   ├── profile-info.tsx
-│       │   └── profile-info.module.css
-│       └── profile-navigation/    # Навигация профиля
-│           ├── profile-navigation.tsx
-│           └── profile-navigation.module.css
-├── services/                       # Redux логика
-│   ├── actions/                    # Redux actions
-│   │   ├── action-types.ts         # Типы действий
-│   │   ├── auth-actions.ts         # Действия аутентификации
-│   │   ├── constructor-actions.ts
-│   │   ├── feed-actions.ts         # Действия для ленты заказов
-│   │   ├── ingredient-details-actions.ts
-│   │   ├── ingredients-actions.ts
-│   │   ├── order-actions.ts
-│   │   ├── profile-orders-actions.ts # Действия для истории заказов
-│   │   └── index.ts                # Центральный экспорт actions
-│   ├── middleware/                 # Redux middleware
-│   │   └── websocket-middleware.ts  # Middleware для WebSocket соединений
-│   ├── reducers/                   # Redux reducers
-│   │   ├── auth-reducer.ts         # Reducer аутентификации
-│   │   ├── constructor-reducer.ts
-│   │   ├── feed-reducer.ts         # Reducer ленты заказов
-│   │   ├── ingredient-details-reducer.ts
-│   │   ├── ingredients-reducer.ts
-│   │   ├── order-reducer.ts
-│   │   ├── profile-orders-reducer.ts # Reducer истории заказов
-│   │   └── root-reducer.ts         # Корневой reducer
-│   └── store/                      # Redux store
-│       └── store.ts                # Конфигурация store
-├── utils/                          # Утилиты и константы
-│   ├── api.ts                      # API функции
-│   ├── checkResponse.ts            # Утилита для проверки ответов API
-│   ├── constants.ts                # Константы приложения
-│   ├── dateUtils.ts                # Утилиты для работы с датами
-│   ├── getErrorText.ts             # Утилита для обработки ошибок
-│   ├── orderUtils.ts               # Утилиты для работы с заказами
-│   ├── tokenUtils.ts               # Утилиты для работы с токенами
-│   └── types.ts                    # TypeScript типы и интерфейсы
-├── index.css                       # Глобальные стили
-├── index.tsx                       # Точка входа приложения
-├── react-app-env.d.ts              # TypeScript декларации
-├── reportWebVitals.ts              # Метрики производительности
-└── setupTests.ts                   # Настройка тестов
+react-burger/
+├── cypress/                       # E2E тестирование с Cypress
+│   ├── support/                     # Поддержка тестов
+│   │   ├── commands.js                # Кастомные команды Cypress
+│   │   └── testData.js                # Тестовые данные и моки
+│   ├── tests/                         # Тестовые сценарии
+│   │   ├── constructor.cy.js          # Тесты конструктора бургеров
+│   │   ├── ingredient-details.cy.js   # Тесты деталей ингредиентов
+│   │   └── order-creation.cy.js       # Тесты создания заказов
+│   └── cypress.config.js              # Конфигурация Cypress
+├── public/                        # Публичные файлы
+│   ├── favicon.png                  # Иконка сайта
+│   ├── index.html                   # HTML шаблон
+│   ├── logo192.png                  # Логотип 192x192
+│   ├── manifest.json                # Манифест
+│   └── robots.txt                   # Файл для поисковых роботов
+├── src/
+│   ├── components/                     # React компоненты
+│   │   ├── app/                          # Главный компонент приложения
+│   │   │   ├── app.tsx                      # Основная логика приложения
+│   │   │   └── app.module.css               # Стили главного компонента
+│   │   ├── app-header/                   # Шапка приложения с навигацией
+│   │   │   ├── app-header.tsx               # Компонент шапки
+│   │   │   └── app-header.module.css
+│   │   ├── burger-constructor/           # Конструктор бургеров
+│   │   │   ├── burger-constructor.tsx
+│   │   │   ├── burger-constructor.module.css
+│   │   │   └── draggable-constructor-item.tsx
+│   │   ├── burger-ingredients/           # Каталог ингредиентов
+│   │   │   ├── burger-ingredients.tsx
+│   │   │   └── burger-ingredients.module.css
+│   │   ├── category-block/               # Блок категории ингредиентов
+│   │   │   ├── category-block.tsx
+│   │   │   └── category-block.module.css
+│   │   ├── category-item/                # Элемент категории
+│   │   │   ├── category-item.tsx
+│   │   │   └── category-item.module.css
+│   │   ├── ingredient-details/           # Детали ингредиента
+│   │   │   ├── ingredient-details.tsx
+│   │   │   └── ingredient-details.module.css
+│   │   ├── loader/                       # Компонент загрузки
+│   │   │   ├── loader.tsx
+│   │   │   └── loader.module.css
+│   │   ├── mobile-restriction/           # Ограничение для мобильных устройств
+│   │   │   ├── mobile-restriction.tsx
+│   │   │   └── mobile-restriction.module.css
+│   │   ├── modal/                        # Модальные окна
+│   │   │   ├── modal.tsx
+│   │   │   └── modal.module.css
+│   │   ├── modal-overlay/                # Оверлей для модальных окон
+│   │   │   ├── modal-overlay.tsx
+│   │   │   └── modal-overlay.module.css
+│   │   ├── nutrition-item/               # Элемент информации о питательности
+│   │   │   ├── nutrition-item.tsx
+│   │   │   └── nutrition-item.module.css
+│   │   ├── order-card/                   # Карточка заказа в ленте
+│   │   │   ├── order-card.tsx
+│   │   │   └── order-card.module.css
+│   │   ├── order-confirm/                # Подтверждение заказа
+│   │   │   ├── order-confirm.tsx
+│   │   │   └── order-confirm.module.css
+│   │   ├── order-details/                # Детали заказа
+│   │   │   ├── order-details.tsx
+│   │   │   └── order-details.module.css
+│   │   ├── order-feed/                   # Лента заказов
+│   │   │   ├── order-feed.tsx
+│   │   │   └── order-feed.module.css
+│   │   ├── order-stats/                  # Статистика заказов
+│   │   │   ├── order-stats.tsx
+│   │   │   └── order-stats.module.css
+│   │   └── protected-route/              # Компонент защищенных маршрутов
+│   │       └── protected-route.tsx
+│   ├── hooks/                      # Кастомные React хуки
+│   │   ├── index.ts                  # Центральный экспорт хуков
+│   │   ├── useModal.ts               # Хук для управления модальными окнами
+│   │   ├── useForm.ts                # Хук для управления состоянием форм
+│   │   ├── useTypedSelector.ts       # Типизированный хук для Redux store
+│   │   └── useTypedDispatch.ts       # Типизированный хук для Redux dispatch
+│   ├── images/                     # Статические изображения
+│   │   └── order-status.png          # Изображение статуса заказа
+│   ├── pages/                      # Страницы приложения
+│   │   ├── auth/                     # Страницы аутентификации
+│   │   │   ├── auth.module.css         # Общие стили для auth страниц
+│   │   │   ├── forgot-password.tsx     # Восстановление пароля
+│   │   │   ├── login.tsx               # Авторизация
+│   │   │   ├── register.tsx            # Регистрация
+│   │   │   └── reset-password.tsx      # Сброс пароля
+│   │   ├── feed/                     # Страница ленты заказов
+│   │   │   ├── feed.tsx
+│   │   │   └── feed.module.css
+│   │   ├── home.tsx                  # Главная страница
+│   │   ├── ingredient-details/       # Страница деталей ингредиента
+│   │   │   ├── ingredient-details.tsx
+│   │   │   └── ingredient-details.module.css
+│   │   ├── not-found/                # Страница 404
+│   │   │   ├── not-found.tsx
+│   │   │   └── not-found.module.css
+│   │   ├── order-details-page/       # Страница деталей заказа
+│   │   │   ├── order-details-page.tsx
+│   │   │   └── order-details-page.module.css
+│   │   └── profile/                  # Профиль пользователя
+│   │       ├── profile.tsx             # Главная страница профиля
+│   │       ├── profile.module.css      # Стили профиля
+│   │       ├── profile-info/           # Информация профиля
+│   │       │   ├── profile-info.tsx
+│   │       │   └── profile-info.module.css
+│   │       └── profile-navigation/     # Навигация профиля
+│   │           ├── profile-navigation.tsx
+│   │           └── profile-navigation.module.css
+│   ├── services/                       # Redux логика
+│   │   ├── actions/                      # Redux actions
+│   │   │   ├── action-types.ts             # Типы действий Redux
+│   │   │   ├── auth-actions.ts             # Действия аутентификации
+│   │   │   ├── constructor-actions.ts      # Действия конструктора бургера
+│   │   │   ├── feed-actions.ts             # Действия для ленты заказов
+│   │   │   ├── ingredient-details-actions.ts # Действия деталей ингредиента
+│   │   │   ├── ingredients-actions.ts      # Действия ингредиентов
+│   │   │   ├── order-actions.ts            # Действия заказов
+│   │   │   ├── profile-orders-actions.ts   # Действия истории заказов
+│   │   │   └── index.ts                    # Центральный экспорт actions
+│   │   ├── middleware/                   # Redux middleware
+│   │   │   └── websocket-middleware.ts     # Middleware для WebSocket соединений
+│   │   ├── reducers/                     # Redux reducers
+│   │   │   ├── auth-reducer.test.js        # Тесты reducer аутентификации
+│   │   │   ├── auth-reducer.ts             # Reducer аутентификации
+│   │   │   ├── constructor-reducer.test.js # Тесты reducer конструктора
+│   │   │   ├── constructor-reducer.ts      # Reducer конструктора бургера
+│   │   │   ├── feed-reducer.test.js        # Тесты reducer ленты заказов
+│   │   │   ├── feed-reducer.ts             # Reducer ленты заказов
+│   │   │   ├── ingredient-details-reducer.test.js # Тесты reducer деталей
+│   │   │   ├── ingredient-details-reducer.ts # Reducer деталей ингредиента
+│   │   │   ├── ingredients-reducer.test.js # Тесты reducer ингредиентов
+│   │   │   ├── ingredients-reducer.ts      # Reducer ингредиентов
+│   │   │   ├── order-reducer.test.js       # Тесты reducer заказов
+│   │   │   ├── order-reducer.ts            # Reducer заказов
+│   │   │   ├── profile-orders-reducer.test.js # Тесты reducer истории
+│   │   │   ├── profile-orders-reducer.ts   # Reducer истории заказов
+│   │   │   ├── root-reducer.test.js        # Тесты корневого reducer
+│   │   │   └── root-reducer.ts             # Корневой reducer
+│   │   └── store/                        # Redux store
+│   │       └── store.ts                    # Конфигурация store
+│   ├── utils/                     # Утилиты и константы
+│   │   ├── api.ts                   # API функции
+│   │   ├── checkResponse.ts         # Утилита для проверки ответов API
+│   │   ├── constants.ts             # Константы приложения
+│   │   ├── dateUtils.ts             # Утилиты для работы с датами
+│   │   ├── getErrorText.ts          # Утилита для обработки ошибок
+│   │   ├── orderUtils.ts            # Утилиты для работы с заказами
+│   │   ├── tokenUtils.ts            # Утилиты для работы с токенами
+│   │   └── types.ts                 # TypeScript типы и интерфейсы
+│   ├── index.css                  # Глобальные стили
+│   ├── index.tsx                  # Точка входа приложения
+│   ├── react-app-env.d.ts         # TypeScript декларации
+│   ├── reportWebVitals.ts         # Метрики производительности
+│   └── setupTests.ts              # Настройка тестов
+├── package.json                 # Зависимости и скрипты
+├── package-lock.json            # Заблокированные версии зависимостей
+├── tsconfig.json                # Конфигурация TypeScript
+└── README.md                    # Документация проекта
 ```
 
 ## Архитектура приложения
@@ -214,12 +254,27 @@ src/
 - **feed** - управление состоянием ленты заказов с WebSocket
 - **profileOrders** - управление состоянием истории заказов пользователя
 
+#### Продвинутые возможности Redux
+- **Типизированные actions** - полная типизация всех Redux действий
+- **Thunk middleware** - для асинхронных операций
+- **WebSocket middleware** - для управления реальным временем
+- **Автоматическая очистка состояния** при выходе из системы
+- **Централизованная обработка ошибок** во всех slice'ах
+- **Мемоизация селекторов** для оптимизации производительности
+- **Тестирование reducers** с Jest для каждого slice'а
+
 ### Система аутентификации
 - **JWT токены** - access и refresh токены для безопасной аутентификации
 - **Автоматическое обновление токенов** - refresh токен обновляется автоматически
 - **Защищенные маршруты** - компонент ProtectedRoute для контроля доступа
 - **Персистентность сессии** - сохранение состояния авторизации в localStorage
 - **Восстановление пароля** - полный цикл восстановления пароля через email
+- **Централизованное управление токенами** - утилиты для работы с токенами
+- **Автоматическая очистка данных** при выходе из системы
+- **Обработка ошибок токенов** с автоматическим обновлением
+- **Валидация токенов** перед выполнением запросов
+- **Безопасное хранение** токенов в localStorage
+- **Интеграция с API** - автоматическое добавление токенов к запросам
 
 ### Маршрутизация
 - **React Router v7** - современная система маршрутизации
@@ -276,6 +331,31 @@ npm start
 
 ```bash
 npm run build
+```
+
+### Запуск тестов
+
+```bash
+# E2E тесты с Cypress
+npm run cypress:open    # Открыть Cypress Test Runner
+npm run cypress:run     # Запустить тесты в headless режиме
+
+# Unit тесты с Jest
+npm test               # Запустить unit тесты
+npm run test:coverage   # Запустить тесты с покрытием кода
+```
+
+### Дополнительные команды
+
+```bash
+# Проверка типов TypeScript
+npm run type-check
+
+# Линтинг кода
+npm run lint
+
+# Форматирование кода
+npm run format
 ```
 
 ## Основные функции
@@ -406,6 +486,71 @@ npm run build
 - **Drag & Drop**: интуитивное взаимодействие
 - **Модальные окна**: фокус на важной информации
 
+## Тестирование
+
+### E2E тестирование с Cypress
+Приложение включает комплексное end-to-end тестирование с использованием Cypress:
+
+#### Тестовые сценарии
+- **constructor.cy.js** - Тестирование конструктора бургеров:
+  - Drag & Drop функциональность ингредиентов
+  - Валидация заказа (проверка наличия булки)
+  - Расчет стоимости заказа
+  - Оформление заказа с авторизацией
+  - Очистка конструктора после заказа
+
+- **ingredient-details.cy.js** - Тестирование деталей ингредиентов:
+  - Открытие модальных окон при клике на ингредиент
+  - Отображение полной информации об ингредиенте
+  - Закрытие модальных окон различными способами
+  - Переходы между страницами с сохранением состояния
+
+- **order-creation.cy.js** - Тестирование создания заказов:
+  - Полный цикл создания заказа
+  - Интеграция с API заказов
+  - Отображение номера заказа
+  - Обработка ошибок при создании заказа
+
+#### Тестовые данные и моки
+- **testData.js** - Централизованные тестовые данные:
+  - Моки ингредиентов с полной информацией
+  - Тестовые пользователи и токены
+  - Моки заказов и ответов API
+  - Конфигурация для различных тестовых сценариев
+
+#### Кастомные команды Cypress
+- **commands.js** - Переиспользуемые команды:
+  - `cy.waitForIngredients()` - Ожидание загрузки ингредиентов
+  - `cy.login()` - Авторизация через UI
+  - `cy.clearState()` - Очистка состояния приложения
+
+#### Конфигурация тестирования
+- **cypress.config.js** - Настройки Cypress:
+  - Базовый URL приложения
+  - Настройки viewport для тестирования
+  - Конфигурация для CI/CD
+
+### Unit тестирование
+- **Jest тесты** для Redux reducers:
+  - auth-reducer.test.js - Тестирование логики аутентификации
+  - constructor-reducer.test.js - Тестирование конструктора
+  - feed-reducer.test.js - Тестирование ленты заказов
+  - ingredients-reducer.test.js - Тестирование ингредиентов
+  - order-reducer.test.js - Тестирование заказов
+  - profile-orders-reducer.test.js - Тестирование истории заказов
+  - root-reducer.test.js - Интеграционные тесты
+
+### Запуск тестов
+```bash
+# E2E тесты с Cypress
+npm run cypress:open    # Открыть Cypress Test Runner
+npm run cypress:run     # Запустить тесты в headless режиме
+
+# Unit тесты с Jest
+npm test               # Запустить unit тесты
+npm run test:coverage   # Запустить тесты с покрытием кода
+```
+
 ## Производительность
 
 ### Оптимизации
@@ -431,6 +576,14 @@ npm run build
 - [x] **Статистика заказов** - отображение готовых заказов и заказов в работе
 - [x] **Детали заказов** - модальные окна и отдельные страницы для заказов
 - [x] **TypeScript типизация** - полная типизация всех компонентов и функций
+- [x] **E2E тестирование** - комплексное тестирование с Cypress
+- [x] **Unit тестирование** - тестирование Redux reducers с Jest
+- [x] **Оптимизация производительности** - React.memo, useMemo, useCallback
+- [x] **Централизованные утилиты** - универсальные функции для работы с API
+- [x] **Автоматическое обновление токенов** - seamless обновление без прерывания UX
+- [x] **WebSocket fallback** - автоматическое переключение на HTTP при проблемах
+- [x] **Типизированные хуки** - кастомные хуки с полной типизацией
+- [x] **Модульная архитектура** - компоненты в отдельных папках с CSS Modules
 
 ### Краткосрочные задачи
 - [ ] **Система уведомлений** - push-уведомления о статусе заказов

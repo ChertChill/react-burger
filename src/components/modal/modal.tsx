@@ -51,7 +51,11 @@ const Modal: React.FC<IModalProps> = ({ children, title, handleClose }) => {
                             {title}
                         </p>
                         
-                        <button className={styles.button__close} onClick={handleClose}>
+                        <button 
+                            className={styles.button__close} 
+                            onClick={handleClose}
+                            data-testid="modal-close-button"
+                        >
                             <CloseIcon type="primary" />            
                         </button>
                     </div>

@@ -9,7 +9,11 @@ import { IModalOverlayProps } from '../../utils/types';
  */
 const ModalOverlay: React.FC<IModalOverlayProps> = ({ children, handleClose }) => {
     return (
-        <div className={styles.container} onClick={handleClose}>
+        <div 
+            className={styles.container} 
+            onClick={handleClose}
+            data-testid="modal-overlay"
+        >
             {children}
         </div>
     );

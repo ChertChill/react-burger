@@ -216,6 +216,7 @@ export default function BurgerConstructor(): React.JSX.Element {
                 // react-dnd требует гибкую типизацию для работы с различными drop элементами
                 ref={dropBunTop as any}
                 className={`${styles['drop-zone']} ${isOverBun && chosenBun ? styles['drop-target'] : ''}`}
+                data-testid="bun-top-drop-zone"
             >
                 <div className={styles.element__bun}>
                     {chosenBun ? (
@@ -243,6 +244,7 @@ export default function BurgerConstructor(): React.JSX.Element {
                     dropMiddle(node);
                 }}
                 className={`${styles['drop-zone']} ${styles.middle__elements} ${hasOverflow ? styles.overflow : ''} ${isOverMiddle && chosenMiddleIngredients && chosenMiddleIngredients.length > 0 ? styles['drop-target'] : ''}`}
+                data-testid="middle-ingredients-drop-zone"
             >
                 {chosenMiddleIngredients && chosenMiddleIngredients.length > 0 ? (
                     chosenMiddleIngredients.map((ingredient, index) => (
@@ -268,6 +270,7 @@ export default function BurgerConstructor(): React.JSX.Element {
                 // react-dnd требует гибкую типизацию для работы с различными drop элементами
                 ref={dropBunBottom as any}
                 className={`${styles['drop-zone']} ${isOverBun && chosenBun ? styles['drop-target'] : ''}`}
+                data-testid="bun-bottom-drop-zone"
             >
                 <div className={styles.element__bun}>
                     {chosenBun ? (
@@ -290,7 +293,7 @@ export default function BurgerConstructor(): React.JSX.Element {
 
             {/* Отображение ошибки заказа */}
             {orderError && (
-                <div className={`${styles.error}`}>
+                <div className={`${styles.error}`} data-testid="order-error">
                     <p className="text text_type_main-default text_color_error">
                         {orderError}
                     </p>
@@ -319,6 +322,7 @@ export default function BurgerConstructor(): React.JSX.Element {
                             size="large" 
                             onClick={handleOrderClick}
                             disabled={orderLoading}
+                            data-testid="order-button"
                         >
                             {orderLoading ? 'Оформление...' : 'Оформить заказ'}
                         </Button>
