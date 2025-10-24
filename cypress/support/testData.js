@@ -1,0 +1,139 @@
+// Тестовые данные для ингредиентов
+export const mockIngredients = [
+  {
+    "_id": "643d69a5c3f7b9001cfa093c",
+    "name": "Краторная булка N-200i",
+    "type": "bun",
+    "proteins": 80,
+    "fat": 24,
+    "carbohydrates": 53,
+    "calories": 420,
+    "price": 1255,
+    "image": "https://code.s3.yandex.net/react/code/bun-01.png",
+    "image_large": "https://code.s3.yandex.net/react/code/bun-01-large.png",
+    "__v": 0
+  },
+  {
+    "_id": "643d69a5c3f7b9001cfa0941",
+    "name": "Биокотлета из марсианской Магнолии",
+    "type": "main",
+    "proteins": 420,
+    "fat": 142,
+    "carbohydrates": 242,
+    "calories": 4242,
+    "price": 424,
+    "image": "https://code.s3.yandex.net/react/code/meat-01.png",
+    "image_large": "https://code.s3.yandex.net/react/code/meat-01-large.png",
+    "__v": 0
+  },
+  {
+    "_id": "643d69a5c3f7b9001cfa0942",
+    "name": "Соус Spicy-X",
+    "type": "sauce",
+    "proteins": 30,
+    "fat": 20,
+    "carbohydrates": 40,
+    "calories": 30,
+    "price": 90,
+    "image": "https://code.s3.yandex.net/react/code/sauce-02.png",
+    "image_large": "https://code.s3.yandex.net/react/code/sauce-02-large.png",
+    "__v": 0
+  },
+  {
+    "_id": "643d69a5c3f7b9001cfa0943",
+    "name": "Соус фирменный Space Sauce",
+    "type": "sauce",
+    "proteins": 50,
+    "fat": 22,
+    "carbohydrates": 11,
+    "calories": 14,
+    "price": 150,
+    "image": "https://code.s3.yandex.net/react/code/sauce-04.png",
+    "image_large": "https://code.s3.yandex.net/react/code/sauce-04-large.png",
+    "__v": 0
+  },
+  {
+    "_id": "643d69a5c3f7b9001cfa0944",
+    "name": "Говяжий метеорит (отбивная)",
+    "type": "main",
+    "proteins": 800,
+    "fat": 800,
+    "carbohydrates": 300,
+    "calories": 2674,
+    "price": 3000,
+    "image": "https://code.s3.yandex.net/react/code/meat-04.png",
+    "image_large": "https://code.s3.yandex.net/react/code/meat-04-large.png",
+    "__v": 0
+  },
+  {
+    "_id": "643d69a5c3f7b9001cfa0945",
+    "name": "Булки N-200i",
+    "type": "bun",
+    "proteins": 80,
+    "fat": 24,
+    "carbohydrates": 53,
+    "calories": 420,
+    "price": 1255,
+    "image": "https://code.s3.yandex.net/react/code/bun-02.png",
+    "image_large": "https://code.s3.yandex.net/react/code/bun-02-large.png",
+    "__v": 0
+  }
+]
+
+// Тестовые данные для пользователя
+export const mockUser = {
+  email: "chertchill@yandex.ru",
+  name: "Чернов Матвей"
+}
+
+// Тестовые данные для токенов
+export const mockTokens = {
+  accessToken: "mock-access-token",
+  refreshToken: "mock-refresh-token"
+}
+
+// Тестовые данные для заказа
+export const mockOrder = {
+  success: true,
+  name: "Краторный space бургер",
+  order: {
+    number: 12345
+  }
+}
+
+// ========================================
+// СЕЛЕКТОРЫ ДЛЯ ТЕСТОВ
+// ========================================
+
+// Основные селекторы ингредиентов
+export const SELECTORS = {
+  // Ингредиенты
+  INGREDIENT_ITEM: '[data-testid="ingredient-item"]',
+  INGREDIENT_DETAILS: '[data-testid="ingredient-details"]',
+  
+  // Конструктор
+  CONSTRUCTOR_INGREDIENT: '[data-testid="constructor-ingredient"]',
+  MIDDLE_INGREDIENTS_DROP_ZONE: '[data-testid="middle-ingredients-drop-zone"]',
+  BUN_TOP_DROP_ZONE: '[data-testid="bun-top-drop-zone"]',
+  BUN_BOTTOM_DROP_ZONE: '[data-testid="bun-bottom-drop-zone"]',
+  
+  // Модальные окна
+  MODAL_OVERLAY: '[data-testid="modal-overlay"]',
+  MODAL_CLOSE_BUTTON: '[data-testid="modal-close-button"]',
+  
+  // Заказы
+  ORDER_BUTTON: '[data-testid="order-button"]',
+  ORDER_CONFIRM: '[data-testid="order-confirm"]',
+  ORDER_NUMBER: '[data-testid="order-number"]',
+  ORDER_ERROR: '[data-testid="order-error"]',
+  
+  // Формы
+  EMAIL_INPUT: 'input[type="email"]',
+  PASSWORD_INPUT: 'input[type="password"]',
+  SUBMIT_BUTTON: 'button[type="submit"]',
+  
+  // Общие элементы
+  BODY: 'body',
+  COUNTER: '.counter',
+  CONSTRUCTOR_ELEMENT_ACTION: '.constructor-element__action'
+}

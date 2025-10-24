@@ -31,7 +31,7 @@ import {
 /**
  * Начальное состояние для аутентификации пользователя
  */
-const initialState: IAuthState = {
+export const initialState: IAuthState = {
   // Данные пользователя
   user: null,
   

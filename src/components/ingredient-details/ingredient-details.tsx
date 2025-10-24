@@ -38,7 +38,12 @@ export default function IngredientDetails(): React.JSX.Element | null {
     }
 
     return (
-        <div className={`${styles.container} mb-5`}>
+        <div 
+            className={`${styles.container} mb-5`}
+            data-testid="ingredient-details"
+            data-ingredient-id={ingredient._id}
+            data-ingredient-name={ingredient.name}
+        >
 
             {/* Контейнер с изображением ингредиента */}
             <div className={styles.image__container}>

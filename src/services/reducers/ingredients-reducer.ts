@@ -18,7 +18,7 @@ import {
  * Начальное состояние для reducer ингредиентов
  * Содержит массив ингредиентов, состояние загрузки и ошибки
  */
-const initialState: IIngredientsState = {
+export const initialState: IIngredientsState = {
   ingredients: [],
   loading: false,
   error: null

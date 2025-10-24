@@ -13,7 +13,7 @@ import { IFeedState, TFeedActions } from '../../utils/types';
 /**
  * Начальное состояние ленты заказов
  */
-const initialState: IFeedState = {
+export const initialState: IFeedState = {
   loading: false,
   error: null,
   orders: [],

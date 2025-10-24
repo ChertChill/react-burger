@@ -12,7 +12,7 @@ import { IProfileOrdersState, TProfileOrdersActions } from '../../utils/types';
 /**
  * Начальное состояние истории заказов пользователя
  */
-const initialState: IProfileOrdersState = {
+export const initialState: IProfileOrdersState = {
   loading: false,
   error: null,
   orders: [],
